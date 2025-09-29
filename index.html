@@ -21,11 +21,24 @@
 
     header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center; /* centers the title */
+      position: relative;
       padding: 14px 20px;
       background: var(--white);
       border-bottom: 1px solid #e5e5e5;
+    }
+
+    header h1 {
+      margin: 0;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #cartBtn {
+      position: absolute;
+      right: 20px;
     }
 
     .btn {
@@ -175,12 +188,11 @@
 <script>
   // ===== PRODUCTS (with online placeholder images) =====
 const PRODUCTS = [
-  { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.png", desc:"Cotton tee, unisex." },
-  { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.png", desc:"Stylish denim jacket." },
-  { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.png", desc:"Everyday sneakers." },
-  { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.png", desc:"Slim leather wallet." }
+  { id:1, name:"Classic Tee", price:19.99, img:"images/product1.png", desc:"Cotton tee, unisex." },
+  { id:2, name:"Denim Jacket", price:59.99, img:"images/product2.png", desc:"Stylish denim jacket." },
+  { id:3, name:"Casual Sneakers", price:39.99, img:"images/product3.png", desc:"Everyday sneakers." },
+  { id:4, name:"Leather Wallet", price:24.99, img:"images/product4.png", desc:"Slim leather wallet." }
 ];
-
 
   let cart = JSON.parse(localStorage.getItem("simpleCart") || "[]");
 
@@ -215,7 +227,7 @@ const PRODUCTS = [
         <h3>${p.name}</h3>
         <div class="muted">${p.desc}</div>
         <div class="row">
-          <div class="price">$${p.price}</div>
+          <div class="price">BDT ${p.price}</div>
           <button class="btn">Add</button>
         </div>
       `;
@@ -255,7 +267,7 @@ const PRODUCTS = [
         <img src="${p.img}" alt="${p.name}">
         <div style="flex:1">
           <b>${p.name}</b>
-          <div class="muted">$${p.price} × ${it.qty} = $${(p.price*it.qty).toFixed(2)}</div>
+          <div class="muted">BDT ${p.price} × ${it.qty} = BDT ${(p.price*it.qty).toFixed(2)}</div>
         </div>
         <div class="qty-controls">
           <button class="btn grey">-</button>
@@ -273,7 +285,7 @@ const PRODUCTS = [
     });
 
     const total = cart.reduce((s,it)=> s + PRODUCTS.find(p=>p.id===it.id).price*it.qty, 0);
-    document.getElementById("totals").textContent = "Total: $" + total.toFixed(2);
+    document.getElementById("totals").textContent = "Total: BDT " + total.toFixed(2);
   }
 
   function updateQty(id,val){ 
