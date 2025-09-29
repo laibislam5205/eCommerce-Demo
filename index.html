@@ -21,24 +21,17 @@
 
     header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center; /* centers the title */
-      position: relative;
       padding: 14px 20px;
       background: var(--white);
       border-bottom: 1px solid #e5e5e5;
     }
 
     header h1 {
+      flex: 1;
+      text-align: center;
       margin: 0;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    #cartBtn {
-      position: absolute;
-      right: 20px;
     }
 
     .btn {
@@ -188,10 +181,10 @@
 <script>
   // ===== PRODUCTS (with online placeholder images) =====
 const PRODUCTS = [
-  { id:1, name:"Classic Tee", price:19.99, img:"images/product1.png", desc:"Cotton tee, unisex." },
-  { id:2, name:"Denim Jacket", price:59.99, img:"images/product2.png", desc:"Stylish denim jacket." },
-  { id:3, name:"Casual Sneakers", price:39.99, img:"images/product3.png", desc:"Everyday sneakers." },
-  { id:4, name:"Leather Wallet", price:24.99, img:"images/product4.png", desc:"Slim leather wallet." }
+  { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.png", desc:"Cotton tee, unisex." },
+  { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.png", desc:"Stylish denim jacket." },
+  { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.png", desc:"Everyday sneakers." },
+  { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.png", desc:"Slim leather wallet." }
 ];
 
   let cart = JSON.parse(localStorage.getItem("simpleCart") || "[]");
