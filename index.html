@@ -1,111 +1,344 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fashion Store</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SimpleShop — eCommerce Demo</title>
   <style>
+    :root {
+      --accent: #2c7be5;
+      --muted: #666;
+      --bg: #f6f6f8;
+      --white: #fff;
+    }
+
     body {
       font-family: Arial, sans-serif;
+      background: var(--bg);
       margin: 0;
-      padding: 0;
-      background: #f4f4f9;
+      color: #111;
     }
+
     header {
-      background: #222;
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: var(--white);
+      border-bottom: 1px solid #e5e5e5;
     }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-    .card:hover {
-      transform: scale(1.05);
-    }
-    .card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
-    .card h3 {
-      margin: 10px 0;
-    }
-    .card p {
-      padding: 0 10px;
-      color: #555;
-      font-size: 14px;
-    }
-    .price {
-      color: green;
-      font-weight: bold;
-      margin: 10px 0;
-    }
+
     .btn {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 15px;
-      background: #222;
-      color: #fff;
+      background: var(--accent);
+      color: var(--white);
+      padding: 8px 12px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: 0.2s;
     }
-    .btn:hover {
-      background: #555;
+    .btn:hover { background: #1a5fcc; }
+    .btn.grey { background: #999; }
+    .btn.grey:hover { background: #777; }
+
+    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 18px; }
+
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex; flex-direction: column;
+      transition: 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+    .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+    .card h3 { margin: 10px 0 6px; font-size: 16px; }
+    .price { font-weight: bold; margin-top: auto; }
+
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.4; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35);
+      align-items: center; justify-content: center;
+      opacity:0;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+    }
+    .modal.show { display:flex; opacity:1; }
+
+    .panel {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 18px;
+      max-width: 900px; width: 95%;
+      max-height: 90%; overflow-y: auto;
+    }
+
+    .row { display: flex; justify-content: space-between; align-items: center; }
+
+    .cart-list { margin-top: 12px; }
+    .cart-item { display: flex; gap: 10px; align-items: center; border-bottom: 1px dashed #eee; padding: 8px 0; }
+    .cart-item img { width: 64px; height: 64px; border-radius: 6px; object-fit: cover; }
+
+    .qty-controls {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .qty-controls input { width: 50px; text-align: center; padding:4px; border-radius:4px; border:1px solid #ccc; }
+
+    form { margin-top: 12px; display: grid; gap: 10px; }
+    label { font-size: 14px; display: flex; flex-direction: column; }
+    input { padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
+    input:focus { outline: 2px solid var(--accent); }
+
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: #2c7be5; color: #fff;
+      padding: 10px 16px; border-radius: 6px;
+      opacity: 0; transition: opacity 0.3s ease;
+      z-index: 9999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Empty cart animation */
+    .cart-empty {
+      text-align: center;
+      font-size: 18px;
+      color: var(--muted);
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Highlight new item in cart */
+    .cart-item.added {
+      animation: flash 0.5s ease-in-out;
+    }
+    @keyframes flash {
+      0% { background-color: #fff3cd; }
+      100% { background-color: var(--white); }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Fashion Store</h1>
-    <p>Trendy Clothing & Accessories</p>
-  </header>
+<header>
+  <h1>SimpleShop (Demo)</h1>
+  <button id="cartBtn" class="btn">Cart (<span id="cartCount">0</span>)</button>
+</header>
 
-  <main class="container" id="product-container">
-    <!-- Products will be injected here -->
-  </main>
+<main class="container">
+  <p class="muted">Demo marketplace: clothes & accessories — client-only storefront (cart + checkout form + order download).</p>
+  <div id="products" class="grid"></div>
+</main>
 
-  <script>
-    // ===== PRODUCTS =====
-    const PRODUCTS = [
-      { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.jpeg", desc:"Cotton tee, unisex." },
-      { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.jpeg", desc:"Stylish denim jacket." },
-      { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.jpeg", desc:"Everyday sneakers." },
-      { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.jpeg", desc:"Slim leather wallet." },
-      { id:5, name:"Wrist Watch", price:5599.99, img:"images/product5.jpeg", desc:"Modern analog wrist watch." },
-      { id:6, name:"Casual Pants", price:3499.99, img:"images/product6.jpeg", desc:"Comfortable slim-fit pants." },
-      { id:7, name:"Cotton Socks", price:499.99, img:"images/product7.jpeg", desc:"Pack of 3 soft cotton socks." },
-      { id:8, name:"Sport Joggers", price:3999.99, img:"images/product8.jpeg", desc:"Lightweight joggers for workouts." }
-    ];
+<!-- Cart Modal -->
+<div id="cartModal" class="modal" role="dialog" aria-hidden="true">
+  <div class="panel">
+    <div class="row">
+      <h2>Shopping Cart</h2>
+      <button id="closeCart" class="btn grey">Close</button>
+    </div>
 
-    const container = document.getElementById("product-container");
+    <div id="cartContent" class="cart-list"></div>
+    <div id="totals" class="muted"></div>
+    <hr>
 
-    PRODUCTS.forEach(product => {
+    <h3>Checkout</h3>
+    <form id="checkoutForm">
+      <label>Name <input name="name" required></label>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Address <input name="address" required></label>
+      <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
+      <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
+      <div class="actions">
+        <div id="status" class="muted"></div>
+        <button type="button" id="clearBtn" class="btn grey">Clear cart</button>
+        <button type="submit" class="btn">Place order</button>
+      </div>
+    </form>
+    <footer><small class="muted">SimpleShop Demo — client only</small></footer>
+  </div>
+</div>
+
+<script>
+  // ===== PRODUCTS (8 items total) =====
+const PRODUCTS = [
+  { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.png", desc:"Cotton tee, unisex." },
+  { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.png", desc:"Stylish denim jacket." },
+  { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.png", desc:"Everyday sneakers." },
+  { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.png", desc:"Slim leather wallet." },
+  { id:5, name:"Wrist Watch", price:5599.99, img:"images/product5.png", desc:"Modern analog wrist watch." },
+  { id:6, name:"Casual Pants", price:3499.99, img:"images/product6.png", desc:"Comfortable slim-fit pants." },
+  { id:7, name:"Cotton Socks", price:499.99, img:"images/product7.png", desc:"Pack of 3 soft cotton socks." },
+  { id:8, name:"Sport Joggers", price:3999.99, img:"images/product8.png", desc:"Lightweight joggers for workouts." }
+];
+
+  let cart = JSON.parse(localStorage.getItem("simpleCart") || "[]");
+
+  // ===== Helper Functions =====
+  function saveCart(){ 
+    localStorage.setItem("simpleCart", JSON.stringify(cart)); 
+    updateCartCount(); 
+  }
+
+  function updateCartCount(){ 
+    document.getElementById("cartCount").textContent = cart.reduce((s,i)=>s+i.qty,0); 
+  }
+
+  function showToast(msg){
+    let toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.classList.add("show"),10);
+    setTimeout(()=>{toast.classList.remove("show"); setTimeout(()=>toast.remove(),300)},2000);
+  }
+
+  // ===== Render Products =====
+  function renderProducts(){
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+    PRODUCTS.forEach(p=>{
       const card = document.createElement("div");
-      card.classList.add("card");
-
+      card.className = "card";
       card.innerHTML = `
-        <img src="${product.img}" alt="${product.name}">
-        <h3>${product.name}</h3>
-        <p>${product.desc}</p>
-        <p class="price">৳${product.price.toFixed(2)}</p>
-        <button class="btn">Add to Cart</button>
+        <img src="${p.img}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="muted">${p.desc}</div>
+        <div class="row">
+          <div class="price">BDT ${p.price}</div>
+          <button class="btn">Add</button>
+        </div>
       `;
-
+      card.querySelector("button").addEventListener("click",()=>addToCart(p.id));
       container.appendChild(card);
     });
-  </script>
+  }
+
+  // ===== Cart Actions =====
+  function addToCart(id){
+    let item = cart.find(i=>i.id===id);
+    if(item){ item.qty++; } else { cart.push({id, qty:1}); }
+    saveCart();
+    renderCart(id); // highlight newly added item
+    showToast("Added to cart!");
+  }
+
+  function renderCart(highlightId){
+    const el = document.getElementById("cartContent");
+    el.innerHTML = "";
+
+    if(cart.length === 0){
+      el.innerHTML = "<p class='cart-empty'>Cart is empty 🛒</p>";
+      document.getElementById("totals").textContent = "";
+      return;
+    }
+
+    cart.forEach(it=>{
+      const p = PRODUCTS.find(x=>x.id===it.id);
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      if(highlightId && it.id === highlightId){
+        div.classList.add("added");
+        setTimeout(()=> div.classList.remove("added"), 600);
+      }
+      div.innerHTML = `
+        <img src="${p.img}" alt="${p.name}">
+        <div style="flex:1">
+          <b>${p.name}</b>
+          <div class="muted">BDT ${p.price} × ${it.qty} = BDT ${(p.price*it.qty).toFixed(2)}</div>
+        </div>
+        <div class="qty-controls">
+          <button class="btn grey">-</button>
+          <input type="number" value="${it.qty}" min="1">
+          <button class="btn">+</button>
+        </div>
+        <button class="btn grey remove-btn">Remove</button>
+      `;
+
+      div.querySelector(".qty-controls input").addEventListener("change", e=>updateQty(p.id,e.target.value));
+      div.querySelector(".qty-controls .btn:first-child").addEventListener("click", ()=>updateQty(p.id,it.qty-1));
+      div.querySelector(".qty-controls .btn:last-child").addEventListener("click", ()=>updateQty(p.id,it.qty+1));
+      div.querySelector(".remove-btn").addEventListener("click", ()=>removeItem(p.id));
+      el.appendChild(div);
+    });
+
+    const total = cart.reduce((s,it)=> s + PRODUCTS.find(p=>p.id===it.id).price*it.qty, 0);
+    document.getElementById("totals").textContent = "Total: BDT " + total.toFixed(2);
+  }
+
+  function updateQty(id,val){ 
+    let it=cart.find(i=>i.id===id); 
+    if(it){ 
+      it.qty=Math.max(1,Number(val)); 
+      saveCart(); renderCart(); 
+    } 
+  }
+
+  function removeItem(id){ 
+    cart=cart.filter(i=>i.id!==id); 
+    saveCart(); renderCart(); 
+  }
+
+  // ===== Checkout =====
+  document.getElementById("checkoutForm").addEventListener("submit", e=>{
+    e.preventDefault();
+    if(cart.length===0) return showToast("Cart is empty!");
+    const fd = new FormData(e.target);
+    const order = {
+      id:"ORD-"+Date.now(),
+      customer:Object.fromEntries(fd.entries()),
+      items: cart.map(i=>{let p=PRODUCTS.find(x=>x.id===i.id); return {...p, qty:i.qty, subtotal:p.price*i.qty};}),
+      total: cart.reduce((s,i)=> s+PRODUCTS.find(p=>p.id===i.id).price*i.qty, 0)
+    };
+    const blob=new Blob([JSON.stringify(order,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=order.id+".json"; a.click();
+    cart=[]; saveCart(); renderCart(); e.target.reset();
+    document.getElementById("status").textContent="Order placed!";
+  });
+
+  // ===== Modal Controls =====
+  const modal = document.getElementById("cartModal");
+
+  document.getElementById("cartBtn").onclick=()=>{
+    renderCart();
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+  }
+
+  document.getElementById("closeCart").onclick=closeModal;
+  document.getElementById("clearBtn").onclick=()=>{
+    if(confirm("Clear cart?")){ cart=[]; saveCart(); renderCart(); }
+  }
+
+  modal.addEventListener("click", e=>{
+    if(e.target===modal) closeModal();
+  });
+
+  document.addEventListener("keydown", e=>{
+    if(e.key==="Escape" && modal.classList.contains("show")) closeModal();
+  });
+
+  function closeModal(){
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+  }
+
+  // ===== Init =====
+  renderProducts(); updateCartCount();
+</script>
 </body>
 </html>
