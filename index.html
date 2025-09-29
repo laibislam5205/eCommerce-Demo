@@ -211,11 +211,11 @@ const PRODUCTS = [
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <img src="BDT{p.img}" alt="BDT{p.name}">
-        <h3>BDT{p.name}</h3>
-        <div class="muted">BDT{p.desc}</div>
+        <img src="${p.img}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="muted">${p.desc}</div>
         <div class="row">
-          <div class="price">BDTBDT{p.price}</div>
+          <div class="price">$${p.price}</div>
           <button class="btn">Add</button>
         </div>
       `;
@@ -252,14 +252,14 @@ const PRODUCTS = [
         setTimeout(()=> div.classList.remove("added"), 600);
       }
       div.innerHTML = `
-        <img src="BDT{p.img}" alt="BDT{p.name}">
+        <img src="${p.img}" alt="${p.name}">
         <div style="flex:1">
-          <b>BDT{p.name}</b>
-          <div class="muted">BDTBDT{p.price} × BDT{it.qty} = BDTBDT{(p.price*it.qty).toFixed(2)}</div>
+          <b>${p.name}</b>
+          <div class="muted">$${p.price} × ${it.qty} = $${(p.price*it.qty).toFixed(2)}</div>
         </div>
         <div class="qty-controls">
           <button class="btn grey">-</button>
-          <input type="number" value="BDT{it.qty}" min="1">
+          <input type="number" value="${it.qty}" min="1">
           <button class="btn">+</button>
         </div>
         <button class="btn grey remove-btn">Remove</button>
@@ -273,7 +273,7 @@ const PRODUCTS = [
     });
 
     const total = cart.reduce((s,it)=> s + PRODUCTS.find(p=>p.id===it.id).price*it.qty, 0);
-    document.getElementById("totals").textContent = "Total: BDT" + total.toFixed(2);
+    document.getElementById("totals").textContent = "Total: $" + total.toFixed(2);
   }
 
   function updateQty(id,val){ 
@@ -339,6 +339,7 @@ const PRODUCTS = [
 </script>
 </body>
 </html>
+
 
 
 
