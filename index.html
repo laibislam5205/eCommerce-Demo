@@ -11,17 +11,17 @@
   </div>
 </header>
 
-<div id="sidebar" style="display:flex; align-items:center; justify-content:space-between;">
-  <h2>Categories</h2>
-  <h3 style="margin:0; cursor:pointer;">
-    <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;">
-  </h3>
-<ul>
-  <li onclick="renderProducts('All')">All</li>
-  <li onclick="renderProducts('Clothing')">Clothing</li>
-  <li onclick="renderProducts('Accessories')">Accessories</li>
-  <li onclick="renderProducts('Bike Gear')">Bike Gear</li>
-</ul>
+<div id="sidebar">
+  <h2 style="display:flex; justify-content:space-between; align-items:center;">
+    Categories
+    <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="cursor:pointer;">
+  </h2>
+  <ul>
+    <li onclick="renderProducts('All')">All</li>
+    <li onclick="renderProducts('Clothing')">Clothing</li>
+    <li onclick="renderProducts('Accessories')">Accessories</li>
+    <li onclick="renderProducts('Bike Gear')">Bike Gear</li>
+  </ul>
 </div>
   
 <main class="container">
@@ -229,6 +229,7 @@ updateCartCount();
 </script>
 </body>
 </html>
+
 
 
 
