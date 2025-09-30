@@ -128,7 +128,9 @@ const PRODUCTS = [
   {id:9,name:"Bike Gloves",price:1599.99,img:"images/product9.jpeg",desc:"Protective and comfortable bike gloves."},
   {id:10,name:"Bike Mask",price:899.99,img:"images/product10.jpeg",desc:"Breathable anti-dust bike mask."},
   {id:11,name:"Bike Helmet",price:4999.99,img:"images/product11.jpeg",desc:"Durable helmet for safe riding."},
-  {id:12,name:"Bike Body Armor",price:9999.99,img:"images/product12.jpeg",desc:"Full body protective armor for bikers."}
+  {id:12,name:"Bike Body Armor",price:9999.99,img:"images/product12.jpeg",desc:"Full body protective armor for bikers."},
+  {id:13,name:"Power Bank",price:3999.99,img:"images/product13.jpeg",desc:"Magsafe power bank."},
+  {id:14,name:"Cable",price:1599.99,img:"images/product14.jpeg",desc:"80Gbps 250W superfast cable."}
 ];
 
 let cart = JSON.parse(localStorage.getItem("simpleCart")||"[]");
@@ -142,7 +144,7 @@ function renderProducts(category="All"){
   container.innerHTML="";
   PRODUCTS.filter(p=>category==="All" || 
     (category==="Clothing" && ["Classic Tee","Denim Jacket","Casual Pants","Cotton Socks","Sport Joggers"].includes(p.name)) ||
-    (category==="Accessories" && ["Leather Wallet","Wrist Watch"].includes(p.name)) ||
+    (category==="Accessories" && ["Leather Wallet","Wrist Watch","Power Bank","Cable"].includes(p.name)) ||
     (category==="Bike Gear" && ["Bike Gloves","Bike Mask","Bike Helmet","Bike Body Armor"].includes(p.name))
   ).forEach(p=>{
     const card=document.createElement("div"); card.className="card";
@@ -229,6 +231,7 @@ updateCartCount();
 </script>
 </body>
 </html>
+
 
 
 
