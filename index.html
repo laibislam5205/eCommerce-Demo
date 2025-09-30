@@ -12,7 +12,10 @@
 </header>
 
 <div id="sidebar">
-  <h2>Categories <img src="images/back-arrow.png" id="close-sidebar" alt="Close"></h2>
+  <h2>Categories</h2>   
+  <h3 style="margin:0; cursor:pointer;">
+    <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;">
+  </h3>
   <ul>
     <li onclick="renderProducts('All')">All</li>
     <li onclick="renderProducts('Clothing')">Clothing</li>
@@ -82,10 +85,10 @@
     /* Sidebar */
     #sidebar { position:fixed; top:0; left:-300px; width:250px; height:100%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.2); transition:left 0.3s ease; padding:20px; z-index:1000; }
     #sidebar.active { left:0; }
-    #sidebar h3 { margin-top:0; display:flex; justify-content:space-between; align-items:center; }
-    #sidebar h3 img { width:20px; height:20px; cursor:pointer; }
+    #sidebar h2 { margin-top:0; display:flex; justify-content:left; align-items:center; }
+    #sidebar h3 img { width:20px; height:20px; cursor:pointer; position: right; }
     #sidebar ul { list-style:none; padding:0; margin:20px 0 0; }
-    #sidebar ul li { margin:10px 0; cursor:pointer; color:#333; }
+    #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
     /* Modal */
     .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease; z-index:1000; }
     .modal.show { display:flex; opacity:1; }
