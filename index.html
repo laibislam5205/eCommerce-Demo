@@ -75,10 +75,12 @@
     .icon-btn:hover { color: var(--accent); }
     #cart-btn { position: relative; cursor:pointer; width:28px; height:28px; }
     #cart-count { position:absolute; top:-6px; right:-10px; background:var(--accent); color:var(--white); font-size:12px; padding:2px 6px; border-radius:50%; }
+
     .btn { background:var(--accent); color:var(--white); padding:8px 12px; border:none; border-radius:6px; cursor:pointer; transition:0.2s; }
     .btn:hover { background:#1a5fcc; }
     .btn.grey { background:#999; }
     .btn.grey:hover { background:#777; }
+
     .container { max-width:1250px; margin:20px auto; padding:0 16px; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(234px,1fr)); gap:20px; }
     .card { background:var(--white); border-radius:10px; padding:14px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display:flex; flex-direction:column; transition:0.2s; }
@@ -90,12 +92,8 @@
 
     /* Sidebar */
     #sidebar { position:fixed; top:0; left:-300px; width:250px; height:100%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.2); transition:left 0.3s ease; padding:20px; z-index:1000; }
-    #content {
-      transition: margin-left 0.3s ease;
-    }
-    #sidebar.active ~ #content {
-      margin-left: 250px; /* same as sidebar width */
-    }
+    #content { transition: margin-left 0.3s ease; }
+    #sidebar.active ~ #content { margin-left: 250px; /* same as sidebar width */ }
     #sidebar.active { left:0; }
     #sidebar h2 { margin-top:5; display:flex; justify-content:left; align-items:center; }
     #sidebar h3 img { width:20px; height:20px; cursor:pointer; position: right; }
@@ -112,10 +110,12 @@
     .cart-item img { width:64px; height:64px; border-radius:6px; object-fit:cover; }
     .qty-controls { display:flex; align-items:center; gap:4px; }
     .qty-controls input { width:50px; text-align:center; padding:4px; border-radius:4px; border:1px solid #ccc; }
+
     form { margin-top:12px; display:grid; gap:10px; }
     label { font-size:14px; display:flex; flex-direction:column; }
     input { padding:6px; border:1px solid #ccc; border-radius:5px; }
     input:focus { outline:2px solid var(--accent); }
+
     .actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
 
     /* Toast Notification */
@@ -149,7 +149,8 @@ const PRODUCTS = [
   {id:11,name:"Bike Helmet",price:4999.99,img:"images/product11.jpeg",desc:"Durable helmet for safe riding."},
   {id:12,name:"Bike Body Armor",price:9999.99,img:"images/product12.jpeg",desc:"Full body protective armor for bikers."},
   {id:13,name:"Power Bank",price:3999.99,img:"images/product13.jpeg",desc:"Magsafe power bank."},
-  {id:14,name:"Cable",price:1599.99,img:"images/product14.jpeg",desc:"80Gbps 250W superfast cable."}
+  {id:14,name:"Cable",price:1599.99,img:"images/product14.jpeg",desc:"80Gbps 250W superfast cable."},
+  {id:15,name:"Phone Case",price:1599.99,img:"images/product15.jpeg",desc:"Magsafe phone case."}
 ];
 
 let cart = JSON.parse(localStorage.getItem("simpleCart")||"[]");
