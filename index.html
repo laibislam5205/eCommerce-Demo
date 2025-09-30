@@ -1,190 +1,11 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SimpleShop — eCommerce Demo</title>
-  <style>
-    :root {
-      --accent: #2c7be5;
-      --muted: #666;
-      --bg: #f6f6f8;
-      --white: #fff;
-    }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      margin: 0;
-      color: #111;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 20px;
-      background: var(--white);
-      border-bottom: 1px solid #e5e5e5;
-    }
-
-    header .icon-btn {
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      color: #333;
-    }
-    header .icon-btn:hover { color: var(--accent); }
-
-    #cartBtn {
-      position: relative;
-    }
-    #cartCount {
-      position: absolute;
-      top: -6px; right: -10px;
-      background: var(--accent);
-      color: var(--white);
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 50%;
-    }
-
-    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 18px; }
-
-    .card {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 14px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      display: flex; flex-direction: column;
-      transition: 0.2s;
-    }
-    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
-
-    .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-    .card h3 { margin: 10px 0 6px; font-size: 16px; }
-    .price { font-weight: bold; margin-top: auto; }
-
-    .muted { color: var(--muted); font-size: 14px; line-height: 1.4; }
-
-    .btn {
-      background: var(--accent);
-      color: var(--white);
-      padding: 6px 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 14px;
-    }
-    .btn:hover { background: #1a5fcc; }
-    .btn.grey { background: #999; }
-    .btn.grey:hover { background: #777; }
-
-    /* Sidebar */
-    #sidebar {
-      position: fixed;
-      top: 0; left: -250px;
-      width: 220px; height: 100%;
-      background: var(--white);
-      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-      padding: 20px;
-      transition: left 0.3s ease;
-      z-index: 2000;
-    }
-    #sidebar.show { left: 0; }
-    #sidebar h3 { margin-top: 0; }
-    #sidebar ul { list-style: none; padding: 0; margin: 0; }
-    #sidebar li { margin: 12px 0; cursor: pointer; color: var(--accent); }
-    #sidebar li:hover { text-decoration: underline; }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.35);
-      align-items: center; justify-content: center;
-      opacity:0;
-      transition: opacity 0.2s ease;
-      z-index: 1000;
-    }
-    .modal.show { display:flex; opacity:1; }
-
-    .panel {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 18px;
-      max-width: 900px; width: 95%;
-      max-height: 90%; overflow-y: auto;
-    }
-
-    .row { display: flex; justify-content: space-between; align-items: center; }
-
-    .cart-list { margin-top: 12px; }
-    .cart-item { display: flex; gap: 10px; align-items: center; border-bottom: 1px dashed #eee; padding: 8px 0; }
-    .cart-item img { width: 64px; height: 64px; border-radius: 6px; object-fit: cover; }
-
-    .qty-controls { display: flex; align-items: center; gap: 4px; }
-    .qty-controls input { width: 50px; text-align: center; padding:4px; border-radius:4px; border:1px solid #ccc; }
-
-    form { margin-top: 12px; display: grid; gap: 10px; }
-    label { font-size: 14px; display: flex; flex-direction: column; }
-    input { padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
-    input:focus { outline: 2px solid var(--accent); }
-
-    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 20px; left: 50%;
-      transform: translateX(-50%);
-      background: #2c7be5; color: #fff;
-      padding: 10px 16px; border-radius: 6px;
-      opacity: 0; transition: opacity 0.3s ease;
-      z-index: 9999;
-    }
-    .toast.show { opacity: 1; }
-
-    /* Empty cart animation */
-    .cart-empty {
-      text-align: center;
-      font-size: 18px;
-      color: var(--muted);
-      animation: bounce 1s infinite;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    /* Highlight new item in cart */
-    .cart-item.added { animation: flash 0.5s ease-in-out; }
-    @keyframes flash {
-      0% { background-color: #fff3cd; }
-      100% { background-color: var(--white); }
-    }
-  </style>
-</head>
 <body>
 <header>
-  <button id="menuBtn" class="icon-btn">☰</button>
   <h1>SimpleShop (Demo)</h1>
-  <button id="cartBtn" class="icon-btn">🛒<span id="cartCount">0</span></button>
+  <button id="cartBtn" class="btn">Cart (<span id="cartCount">0</span>)</button>
 </header>
-
-<!-- Sidebar -->
-<aside id="sidebar">
-  <h3>Categories</h3>
-  <ul>
-    <li data-category="all">All Products</li>
-    <li data-category="Clothing">Clothing</li>
-    <li data-category="Accessories">Accessories</li>
-    <li data-category="Bike Gear">Bike Gear</li>
-  </ul>
-</aside>
 
 <main class="container">
   <p class="muted">Demo marketplace: clothes & accessories — client-only storefront (cart + checkout form + order download).</p>
@@ -220,25 +41,159 @@
   </div>
 </div>
 
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SimpleShop — eCommerce Demo</title>
+  <style>
+    :root {
+      --accent: #2c7be5;
+      --muted: #666;
+      --bg: #f6f6f8;
+      --white: #fff;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      color: #111;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: var(--white);
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: var(--white);
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn:hover { background: #1a5fcc; }
+    .btn.grey { background: #999; }
+    .btn.grey:hover { background: #777; }
+
+    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 18px; }
+
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex; flex-direction: column;
+      transition: 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+    .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+    .card h3 { margin: 10px 0 6px; font-size: 16px; }
+    .price { font-weight: bold; margin-top: auto; }
+
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.4; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35);
+      align-items: center; justify-content: center;
+      opacity:0;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+    }
+    .modal.show { display:flex; opacity:1; }
+
+    .panel {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 18px;
+      max-width: 900px; width: 95%;
+      max-height: 90%; overflow-y: auto;
+    }
+
+    .row { display: flex; justify-content: space-between; align-items: center; }
+
+    .cart-list { margin-top: 12px; }
+    .cart-item { display: flex; gap: 10px; align-items: center; border-bottom: 1px dashed #eee; padding: 8px 0; }
+    .cart-item img { width: 64px; height: 64px; border-radius: 6px; object-fit: cover; }
+
+    .qty-controls {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .qty-controls input { width: 50px; text-align: center; padding:4px; border-radius:4px; border:1px solid #ccc; }
+
+    form { margin-top: 12px; display: grid; gap: 10px; }
+    label { font-size: 14px; display: flex; flex-direction: column; }
+    input { padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
+    input:focus { outline: 2px solid var(--accent); }
+
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: #2c7be5; color: #fff;
+      padding: 10px 16px; border-radius: 6px;
+      opacity: 0; transition: opacity 0.3s ease;
+      z-index: 9999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Empty cart animation */
+    .cart-empty {
+      text-align: center;
+      font-size: 18px;
+      color: var(--muted);
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Highlight new item in cart */
+    .cart-item.added {
+      animation: flash 0.5s ease-in-out;
+    }
+    @keyframes flash {
+      0% { background-color: #fff3cd; }
+      100% { background-color: var(--white); }
+    }
+  </style>
+</head>
+
+
 <script>
-  // ===== PRODUCTS =====
-  const PRODUCTS = [
-    { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.jpeg", desc:"Cotton tee, unisex.", category:"Clothing" },
-    { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.jpeg", desc:"Stylish denim jacket.", category:"Clothing" },
-    { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.jpeg", desc:"Everyday sneakers.", category:"Clothing" },
-    { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.jpeg", desc:"Slim leather wallet.", category:"Accessories" },
-    { id:5, name:"Wrist Watch", price:5599.99, img:"images/product5.jpeg", desc:"Modern analog wrist watch.", category:"Accessories" },
-    { id:6, name:"Casual Pants", price:3499.99, img:"images/product6.jpeg", desc:"Comfortable slim-fit pants.", category:"Clothing" },
-    { id:7, name:"Cotton Socks", price:499.99, img:"images/product7.jpeg", desc:"Pack of 3 soft cotton socks.", category:"Clothing" },
-    { id:8, name:"Sport Joggers", price:3999.99, img:"images/product8.jpeg", desc:"Lightweight joggers for workouts.", category:"Clothing" },
-    { id:9, name:"Bike Gloves", price:1599.99, img:"images/product9.jpeg", desc:"Protective and comfortable bike gloves.", category:"Bike Gear" },
-    { id:10, name:"Bike Mask", price:899.99, img:"images/product10.jpeg", desc:"Breathable anti-dust bike mask.", category:"Bike Gear" },
-    { id:11, name:"Bike Helmet", price:4999.99, img:"images/product11.jpeg", desc:"Durable helmet for safe riding.", category:"Bike Gear" },
-    { id:12, name:"Bike Body Armor", price:9999.99, img:"images/product12.jpeg", desc:"Full body protective armor for bikers.", category:"Bike Gear" }
-  ];
+  // ===== PRODUCTS (12 items total) =====
+const PRODUCTS = [
+  { id:1, name:"Classic Tee", price:2399.99, img:"images/product1.jpeg", desc:"Cotton tee, unisex." },
+  { id:2, name:"Denim Jacket", price:4799.99, img:"images/product2.jpeg", desc:"Stylish denim jacket." },
+  { id:3, name:"Casual Sneakers", price:7199.99, img:"images/product3.jpeg", desc:"Everyday sneakers." },
+  { id:4, name:"Leather Wallet", price:2999.99, img:"images/product4.jpeg", desc:"Slim leather wallet." },
+  { id:5, name:"Wrist Watch", price:5599.99, img:"images/product5.jpeg", desc:"Modern analog wrist watch." },
+  { id:6, name:"Casual Pants", price:3499.99, img:"images/product6.jpeg", desc:"Comfortable slim-fit pants." },
+  { id:7, name:"Cotton Socks", price:499.99, img:"images/product7.jpeg", desc:"Pack of 3 soft cotton socks." },
+  { id:8, name:"Sport Joggers", price:3999.99, img:"images/product8.jpeg", desc:"Lightweight joggers for workouts." },
+  { id:9, name:"Bike Gloves", price:1599.99, img:"images/product9.jpeg", desc:"Protective and comfortable bike gloves." },
+  { id:10, name:"Bike Mask", price:899.99, img:"images/product10.jpeg", desc:"Breathable anti-dust bike mask." },
+  { id:11, name:"Bike Helmet", price:4999.99, img:"images/product11.jpeg", desc:"Durable helmet for safe riding." },
+  { id:12, name:"Bike Body Armor", price:9999.99, img:"images/product12.jpeg", desc:"Full body protective armor for bikers." }
+];
 
   let cart = JSON.parse(localStorage.getItem("simpleCart") || "[]");
-  let currentCategory = "all";
 
   // ===== Helper Functions =====
   function saveCart(){ 
@@ -263,7 +218,7 @@
   function renderProducts(){
     const container = document.getElementById("products");
     container.innerHTML = "";
-    PRODUCTS.filter(p=> currentCategory==="all" || p.category===currentCategory).forEach(p=>{
+    PRODUCTS.forEach(p=>{
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
@@ -285,7 +240,7 @@
     let item = cart.find(i=>i.id===id);
     if(item){ item.qty++; } else { cart.push({id, qty:1}); }
     saveCart();
-    renderCart(id);
+    renderCart(id); // highlight newly added item
     showToast("Added to cart!");
   }
 
@@ -373,22 +328,25 @@
   }
 
   document.getElementById("closeCart").onclick=closeModal;
-  document.getElementById("clearBtn").onclick=()=>{ if(confirm("Clear cart?")){ cart=[]; saveCart(); renderCart(); } };
+  document.getElementById("clearBtn").onclick=()=>{
+    if(confirm("Clear cart?")){ cart=[]; saveCart(); renderCart(); }
+  }
 
-  modal.addEventListener("click", e=>{ if(e.target===modal) closeModal(); });
-  document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modal.classList.contains("show")) closeModal(); });
-
-  function closeModal(){ modal.classList.remove("show"); modal.setAttribute("aria-hidden","true"); }
-
-  // ===== Sidebar Controls =====
-  const sidebar = document.getElementById("sidebar");
-  document.getElementById("menuBtn").onclick=()=> sidebar.classList.toggle("show");
-  sidebar.querySelectorAll("li").forEach(li=>{
-    li.addEventListener("click",()=>{
-      currentCategory = li.dataset.category;
-      renderProducts();
-      sidebar.classList.remove("show");
-    });
+  modal.addEventListener("click", e=>{
+    if(e.target===modal) closeModal();
   });
 
-  //
+  document.addEventListener("keydown", e=>{
+    if(e.key==="Escape" && modal.classList.contains("show")) closeModal();
+  });
+
+  function closeModal(){
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+  }
+
+  // ===== Init =====
+  renderProducts(); updateCartCount();
+</script>
+</body>
+</html>
