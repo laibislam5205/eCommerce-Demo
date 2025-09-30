@@ -23,7 +23,7 @@
     <li onclick="renderProducts('All')">All</li>
     <li onclick="renderProducts('Clothing')">Clothing</li>
     <li onclick="renderProducts('Accessories')">Accessories</li>
-    <li onclick="renderProducts('Bike Gear')">Bike Gear</li>
+    <li onclick="renderProducts('Gear')">Gear</li>
   </ul>
 </div>
 <div id="content">
@@ -166,8 +166,8 @@ function renderProducts(category="All"){
   container.innerHTML="";
   PRODUCTS.filter(p=>category==="All" || 
     (category==="Clothing" && ["Classic Tee","Denim Jacket","Casual Pants","Cotton Socks","Sport Joggers"].includes(p.name)) ||
-    (category==="Accessories" && ["Leather Wallet","Wrist Watch","Power Bank","Cable"].includes(p.name)) ||
-    (category==="Bike Gear" && ["Bike Gloves","Bike Mask","Bike Helmet","Bike Body Armor"].includes(p.name))
+    (category==="Accessories" && ["Leather Wallet","Wrist Watch","Power Bank","Cable","Phone Case"].includes(p.name)) ||
+    (category==="Gear" && ["Bike Gloves","Bike Mask","Bike Helmet","Bike Body Armor". "Casual Sneakers"].includes(p.name))
   ).forEach(p=>{
     const card=document.createElement("div"); card.className="card";
     card.innerHTML=`
