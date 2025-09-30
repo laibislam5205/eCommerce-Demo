@@ -3,19 +3,22 @@
 
 <body>
 <header>
+
+  <!-- Left menu button -->
   <button id="menuBtn" class="icon-btn">☰</button>
+
   <h1>SimpleShop (Demo)</h1>
+
+  <!-- Right cart button -->
   <div style="position:relative;">
     <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
     <span id="cart-count">0</span>
   </div>
 </header>
 
+<!-- Sidebar -->
 <div id="sidebar">
-  <h2>Categories</h2>   
-  <h3 style="margin:0; cursor:pointer;">
-    <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;">
-  </h3>
+  <h2 id="sidebar-header" style="display:flex; justify-content:space-between; align-items:center;">Categories <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;"></h2>   
   <ul>
     <li onclick="renderProducts('All')">All</li>
     <li onclick="renderProducts('Clothing')">Clothing</li>
@@ -23,11 +26,13 @@
     <li onclick="renderProducts('Bike Gear')">Bike Gear</li>
   </ul>
 </div>
-  
-<main class="container">
-  <div id="products" class="grid"></div>
-</main>
+<div id="content">
+  <main class="container">
+    <div id="products" class="grid"></div>
+  </main>
+</div>
 
+<!-- Cart Modal -->
 <div id="cartModal" class="modal">
   <div class="panel">
     <div class="row">
@@ -74,21 +79,29 @@
     .btn:hover { background:#1a5fcc; }
     .btn.grey { background:#999; }
     .btn.grey:hover { background:#777; }
-    .container { max-width:1000px; margin:20px auto; padding:0 16px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+    .container { max-width:1250px; margin:20px auto; padding:0 16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
     .card { background:var(--white); border-radius:10px; padding:14px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display:flex; flex-direction:column; transition:0.2s; }
     .card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform:translateY(-2px); }
     .card img { width:100%; height:200px; object-fit:cover; border-radius:8px; }
     .card h3 { margin:10px 0 6px; font-size:16px; }
     .price { font-weight:bold; margin-top:auto; }
     .muted { color:var(--muted); font-size:14px; line-height:1.4; }
+
     /* Sidebar */
     #sidebar { position:fixed; top:0; left:-300px; width:250px; height:100%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.2); transition:left 0.3s ease; padding:20px; z-index:1000; }
+    #content {
+      transition: margin-left 0.3s ease;
+    }
+    #sidebar.active ~ #content {
+      margin-left: 250px; /* same as sidebar width */
+    }
     #sidebar.active { left:0; }
     #sidebar h2 { margin-top:0; display:flex; justify-content:left; align-items:center; }
     #sidebar h3 img { width:20px; height:20px; cursor:pointer; position: right; }
     #sidebar ul { list-style:none; padding:0; margin:20px 0 0; }
     #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
+
     /* Modal */
     .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease; z-index:1000; }
     .modal.show { display:flex; opacity:1; }
@@ -104,17 +117,23 @@
     input { padding:6px; border:1px solid #ccc; border-radius:5px; }
     input:focus { outline:2px solid var(--accent); }
     .actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
-    /* Toast */
+
+    /* Toast Notification */
     .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#2c7be5; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s ease; z-index:9999; }
     .toast.show { opacity:1; }
+
+    /* Empty cart animation */
     .cart-empty { text-align:center; font-size:18px; color:var(--muted); animation:bounce 1s infinite; }
     @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+    /* Highlight new item in cart */
     .cart-item.added { animation:flash 0.5s ease-in-out; }
     @keyframes flash { 0%{background-color:#fff3cd;} 100%{background-color:var(--white);} }
   </style>
 </head>
 
 <script>
+
 // ===== Products =====
 const PRODUCTS = [
   {id:1,name:"Classic Tee",price:2399.99,img:"images/product1.jpeg",desc:"Cotton tee, unisex."},
@@ -135,10 +154,12 @@ const PRODUCTS = [
 
 let cart = JSON.parse(localStorage.getItem("simpleCart")||"[]");
 
+// ===== Helper Functions =====
 function saveCart(){ localStorage.setItem("simpleCart",JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount(){ document.getElementById("cart-count").textContent = cart.reduce((s,i)=>s+i.qty,0); }
 function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.classList.add("show"),10); setTimeout(()=>{t.classList.remove("show"); setTimeout(()=>t.remove(),300)},2000); }
 
+// ===== Render Products =====
 function renderProducts(category="All"){
   const container = document.getElementById("products");
   container.innerHTML="";
@@ -162,6 +183,7 @@ function renderProducts(category="All"){
   });
 }
 
+// ===== Cart Actions =====
 function addToCart(id){ 
   let item=cart.find(i=>i.id===id); 
   if(item){ item.qty++; } else { cart.push({id,qty:1}); } 
@@ -200,7 +222,7 @@ function renderCart(highlightId){
 function updateQty(id,val){ let it=cart.find(i=>i.id===id); if(it){ it.qty=Math.max(1,Number(val)); saveCart(); renderCart(); } }
 function removeItem(id){ cart=cart.filter(i=>i.id!==id); saveCart(); renderCart(); }
 
-// Checkout
+// ===== Checkout =====
 document.getElementById("checkoutForm").addEventListener("submit", e=>{
   e.preventDefault();
   if(cart.length===0){ showToast("Cart is empty!"); return; }
@@ -212,7 +234,7 @@ document.getElementById("checkoutForm").addEventListener("submit", e=>{
   document.getElementById("status").textContent="Order placed!";
 });
 
-// Modal
+// ===== Modal Controls =====
 const modal=document.getElementById("cartModal");
 document.getElementById("cart-btn").onclick=()=>{ renderCart(); modal.classList.add("show"); }
 document.getElementById("closeCart").onclick=()=>{ modal.classList.remove("show"); }
@@ -220,25 +242,14 @@ document.getElementById("clearBtn").onclick=()=>{ if(confirm("Clear cart?")){ ca
 modal.addEventListener("click", e=>{ if(e.target===modal){ modal.classList.remove("show"); } });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modal.classList.contains("show")) modal.classList.remove("show"); });
 
-// Sidebar
+// Sidebar actions
 const sidebar=document.getElementById("sidebar");
 document.getElementById("menuBtn").onclick=()=>sidebar.classList.add("active");
 document.getElementById("close-sidebar").onclick=()=>sidebar.classList.remove("active");
 
-// Init
+// ===== Init =====
 renderProducts();
 updateCartCount();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
