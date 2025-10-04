@@ -4,237 +4,318 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShopWave</title>
+
 <style>
-/* ---------- Base styles (unchanged structure) ---------- */
 body {
+  font-family: "Poppins", sans-serif;
   margin: 0;
-  font-family: Poppins, sans-serif;
-  background: #f5f5f5;
+  background: #f4f4f4;
+  color: #333;
 }
-
-/* simple reset for anchor/list visuals */
-ul { list-style: none; padding: 0; margin: 0; }
-
-/* ===== NAVBAR (top) ===== */
-nav {
+header {
+  background: #222;
+  color: white;
+  padding: 15px 20px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background: #111;
-  color: #fff;
-  padding: 10px 20px;
+  align-items: center;
+  position: relative;
+  z-index: 100;
 }
-nav .menu-btn, nav .cart-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-}
-nav .menu-btn img, nav .cart-btn img {
-  width: 25px;
-  height: 25px;
-}
-nav h1 {
-  margin: 0;
-  font-size: 22px;
-}
+header h2 { margin: 0; font-size: 22px; }
 
-/* ===== SIDEBAR ===== */
+/* Sidebar */
+.menu-toggle {
+  width: 30px;
+  height: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.menu-toggle span {
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: 0.3s;
+}
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translateY(8px);
+}
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translateY(-8px);
+}
 .sidebar {
   position: fixed;
   top: 0;
-  left: -260px;            /* hidden by default */
-  width: 250px;
-  height: 100%;
-  background: #222;
-  color: #fff;
-  overflow-y: auto;
-  transition: left 0.3s ease;
-  padding: 20px;
-  z-index: 1000;
-}
-.sidebar h2 {
+  left: -250px;
+  width: 220px;
+  height: 100vh;
+  background: #111;
+  color: white;
+  padding-top: 80px;
+  transition: 0.4s;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 20px;
-  margin: 0 0 12px 0;
+  flex-direction: column;
+  gap: 15px;
+  padding-left: 20px;
+  box-shadow: 3px 0 6px rgba(0,0,0,0.3);
+  z-index: 99;
 }
-.sidebar img { width: 20px; cursor: pointer; }
-.sidebar ul { margin-top: 12px; }
-.sidebar li { padding: 8px 0; cursor: pointer; }
-.sidebar li:hover { color: #0ff; }
-
-/* visible state */
 .sidebar.show { left: 0; }
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: 0.3s;
+}
+.sidebar a:hover { color: #0ff; }
 
-/* ===== MAIN / PRODUCTS ===== */
-/* main is the wrapper we will shift when sidebar opens */
-main {
-  padding: 20px;
-  transition: transform 0.3s ease; /* smooth slide */
-}
-
-/* Shift the entire main content when body has the class sidebar-open */
-body.sidebar-open main {
-  transform: translateX(250px); /* same as sidebar width */
-}
-
-/* product grid */
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-.product {
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  text-align: center;
-  transition: transform 0.15s;
-}
-.product:hover { transform: scale(1.03); }
-.product img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; }
-.product h3 { margin: 10px 0 6px; }
-.product p { color: #555; font-size: 14px; }
-.product .price { font-weight: bold; margin-top: 6px; }
-.product button { margin-top: 8px; background: #111; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
-
-/* ===== CART MODAL ===== */
-#cartModal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  align-items: center; justify-content: center;
-  z-index: 1001;
-}
-#cartModal.show { display: flex; }
-.modal-content {
-  background: #fff;
-  width: 420px;
-  max-width: 94%;
-  padding: 20px;
-  border-radius: 10px;
+/* Cart Button */
+#cart-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
   position: relative;
 }
-.close-btn { position: absolute; right: 12px; top: 8px; font-size: 20px; cursor: pointer; color: #666; }
+#cart-btn img { width: 30px; height: 30px; }
+#cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
 
-/* cart items */
-.cart-item { display:flex; gap:10px; align-items:center; margin-bottom: 10px; }
-.cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
-.muted { color:#777; font-size:13px; }
-.qty-controls { display:flex; align-items:center; gap:6px; }
-.btn { background:#111; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; }
-.btn.grey { background:#ddd; color:#000; }
+/* Product Grid */
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 15px;
+  padding: 20px;
+}
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+.card:hover { transform: scale(1.03); }
+.card img { width: 100%; height: 180px; object-fit: cover; }
+.card h3 { margin: 10px; font-size: 18px; }
+.card .muted { color: gray; margin: 0 10px 10px; font-size: 14px; }
+.card .price { margin: 0 10px 10px; font-weight: bold; }
+.card button {
+  margin: 0 10px 15px;
+  padding: 8px 12px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.card button:hover { background: #333; }
 
-/* empty cart */
-.cart-empty { text-align:center; color:#777; padding:12px; }
+/* Cart Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+.modal.show { display: flex; }
+.modal-content {
+  background: white;
+  width: 95%;
+  max-width: 700px;
+  padding: 20px;
+  border-radius: 10px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.cart-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.cart-item .muted { font-size: 14px; color: gray; }
+.cart-empty { text-align: center; padding: 20px; font-size: 16px; }
+.qty-controls { display: flex; gap: 5px; align-items: center; }
+.qty-controls button {
+  padding: 4px 8px;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.qty-controls input {
+  width: 40px;
+  text-align: center;
+}
+.remove-btn {
+  background: crimson !important;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+.btn.grey { background: #ddd; color: black; }
+#closeCart {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  float: right;
+  cursor: pointer;
+  border-radius: 6px;
+}
 
-/* checkout form small styling */
-form { margin-top: 12px; display:flex; flex-direction:column; gap:8px; }
-input, button[type="submit"] { padding:8px; border-radius:6px; border:1px solid #ccc; }
-button[type="submit"] { background:#111; color:#fff; border:none; cursor:pointer; }
+/* Checkout Form */
+form { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+input, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+button[type="submit"] {
+  background: #111;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#status { color: green; margin-top: 10px; }
 
-/* toast */
+/* Toast */
 .toast {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
-  background:#111; color:#fff; padding:10px 14px; border-radius:6px; opacity:0; transform: translateY(8px);
-  transition: all 0.2s;
-  z-index: 2000;
+  bottom: 25px;
+  right: 25px;
+  background: #333;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 0.3s;
+  z-index: 300;
 }
-.toast.show { opacity:1; transform: translateY(0); }
+.toast.show { opacity: 1; transform: translateY(0); }
 </style>
 </head>
+
 <body>
 
-<nav>
-  <button class="menu-btn"><img src="images/menu.png" alt="Menu"></button>
-  <h1>ShopWave</h1>
-  <button class="cart-btn"><img src="images/cart.png" alt="Cart"></button>
-</nav>
+<header>
+  <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+  <h2>ShopWave</h2>
+  <button id="cart-btn">
+    <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
+    <span id="cart-count">0</span>
+  </button>
+</header>
 
+<!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-  <h2>Categories <img src="images/arrow.png" id="closeSidebar" alt="Close"></h2>
-  <ul>
-    <li data-cat="All">All Products</li>
-    <li data-cat="Clothing">Clothing</li>
-    <li data-cat="Accessories">Accessories</li>
-    <li data-cat="Sports">Sports</li>
-    <li data-cat="Outdoor">Outdoor</li>
-  </ul>
+  <a href="#" data-cat="All">All Products</a>
+  <a href="#" data-cat="Clothing">Clothing</a>
+  <a href="#" data-cat="Accessories">Accessories</a>
+  <a href="#" data-cat="Gear">Gear</a>
 </div>
 
-<main>
-  <div class="products" id="productGrid"></div>
-</main>
+<!-- Products -->
+<main id="products"></main>
 
-<div id="cartModal">
+<!-- CART MODAL -->
+<div class="modal" id="cartModal">
   <div class="modal-content">
-    <span class="close-btn" id="closeCart">&times;</span>
-    <h2>Your Cart</h2>
+    <button id="closeCart">Close</button>
+    <h3>🛒 Your Cart</h3>
     <div id="cartContent"></div>
-    <p id="totals"></p>
+    <h4 id="totals"></h4>
+
     <form id="checkoutForm">
-      <input type="text" name="name" placeholder="Name" required>
+      <input type="text" name="name" placeholder="Full Name" required>
       <input type="email" name="email" placeholder="Email" required>
+      <textarea name="address" placeholder="Shipping Address" required></textarea>
       <button type="submit">Checkout</button>
       <p id="status"></p>
     </form>
   </div>
 </div>
 
-<div class="toast" id="toast">Added to cart!</div>
-
 <script>
-// ===== PRODUCTS =====
+// ===== Sidebar Toggle =====
+const toggleBtn = document.getElementById("menu-toggle");
+const sidebar = document.getElementById("sidebar");
+toggleBtn.addEventListener("click", () => {
+  toggleBtn.classList.toggle("active");
+  sidebar.classList.toggle("show");
+});
+
+// ===== Products =====
 const PRODUCTS = [
-  {id:1, name:"Classic Tee", price:19.99, img:"images/product1.jpeg", desc:"Cotton tee, unisex."},
-  {id:2, name:"Denim Jacket", price:59.99, img:"images/product2.jpeg", desc:"Stylish denim jacket."},
-  {id:3, name:"Casual Sneakers", price:39.99, img:"images/product3.jpeg", desc:"Comfortable sneakers."},
-  {id:4, name:"Leather Belt", price:25.99, img:"images/product4.jpeg", desc:"Genuine leather belt."},
-  {id:5, name:"Bike Gloves", price:15.99, img:"images/product5.jpeg", desc:"Durable gloves for bikers."},
-  {id:6, name:"Bike Mask", price:9.99, img:"images/product6.jpeg", desc:"Breathable face mask."},
-  {id:7, name:"Bike Helmet", price:45.99, img:"images/product7.jpeg", desc:"Safety-certified helmet."},
-  {id:8, name:"Body Armor", price:89.99, img:"images/product8.jpeg", desc:"Protective bike body armor."}
+  {id:1,name:"Classic Tee",price:1999,img:"images/product1.jpeg",desc:"Cotton tee, unisex."},
+  {id:2,name:"Denim Jacket",price:4999,img:"images/product2.jpeg",desc:"Stylish denim jacket."},
+  {id:3,name:"Casual Sneakers",price:3999,img:"images/product3.jpeg",desc:"Comfortable daily wear sneakers."},
+  {id:4,name:"Leather Wallet",price:1499,img:"images/product4.jpeg",desc:"Genuine leather wallet."},
+  {id:5,name:"Wrist Watch",price:6999,img:"images/product5.jpeg",desc:"Elegant wrist watch."},
+  {id:6,name:"Bike Gloves",price:1999,img:"images/product6.jpeg",desc:"Durable biker gloves."},
+  {id:7,name:"Bike Helmet",price:4999,img:"images/product7.jpeg",desc:"Full-face helmet."},
+  {id:8,name:"Bike Body Armor",price:9999,img:"images/product8.jpeg",desc:"Full body biker armor."},
+  {id:9,name:"Power Bank",price:2999,img:"images/product9.jpeg",desc:"Fast charging power bank."},
+  {id:10,name:"Phone Case",price:799,img:"images/product10.jpeg",desc:"Protective phone case."}
 ];
 
-// ===== RENDER PRODUCTS =====
-function renderProducts(){
-  const grid = document.getElementById("productGrid");
-  grid.innerHTML = "";
-  PRODUCTS.forEach(p=>{
-    const card = document.createElement("div");
-    card.className = "product";
-    card.innerHTML = `
+let cart = JSON.parse(localStorage.getItem("shopCart")||"[]");
+function saveCart(){localStorage.setItem("shopCart",JSON.stringify(cart));updateCartCount();}
+function updateCartCount(){document.getElementById("cart-count").textContent=cart.reduce((s,i)=>s+i.qty,0);}
+function showToast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add("show"),10);setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),300)},2000);}
+
+/* ===== Product Rendering ===== */
+function renderProducts(cat="All"){
+  const list=document.getElementById("products"); list.innerHTML="";
+  PRODUCTS.filter(p=>{
+    if(cat==="All")return true;
+    if(cat==="Clothing")return ["Classic Tee","Denim Jacket"].includes(p.name);
+    if(cat==="Accessories")return ["Leather Wallet","Wrist Watch","Power Bank","Phone Case"].includes(p.name);
+    if(cat==="Gear")return ["Bike Gloves","Bike Helmet","Bike Body Armor","Casual Sneakers"].includes(p.name);
+  }).forEach(p=>{
+    const div=document.createElement("div"); div.className="card";
+    div.innerHTML=`
       <img src="${p.img}" alt="${p.name}">
       <h3>${p.name}</h3>
-      <p>${p.desc}</p>
+      <div class="muted">${p.desc}</div>
       <div class="price">BDT ${p.price}</div>
-      <button onclick="addToCart(${p.id})">Add to Cart</button>
+      <button>Add to Cart</button>
     `;
-    grid.appendChild(card);
+    div.querySelector("button").onclick=()=>addToCart(p.id);
+    list.appendChild(div);
   });
 }
+document.querySelectorAll(".sidebar a").forEach(a=>a.onclick=e=>{
+  e.preventDefault(); renderProducts(a.dataset.cat); sidebar.classList.remove("show"); toggleBtn.classList.remove("active");
+});
 
-// ===== CART STORAGE & TOAST =====
-let cart = JSON.parse(localStorage.getItem("cart")||"[]");
-function saveCart(){ localStorage.setItem("cart", JSON.stringify(cart)); }
-function showToast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2000);
-}
-
-// ===== CART ACTIONS (kept exactly as you provided) =====
+// ===== Cart Actions =====
 function addToCart(id){ 
-  let item = cart.find(i => i.id === id); 
-  if(item){ item.qty++; } else { cart.push({id, qty:1}); } 
+  let item=cart.find(i=>i.id===id); 
+  if(item){ item.qty++; } else { cart.push({id,qty:1}); } 
   saveCart(); renderCart(id); showToast("Added to cart!"); 
 }
 
@@ -270,7 +351,7 @@ function renderCart(highlightId){
 function updateQty(id,val){ let it=cart.find(i=>i.id===id); if(it){ it.qty=Math.max(1,Number(val)); saveCart(); renderCart(); } }
 function removeItem(id){ cart=cart.filter(i=>i.id!==id); saveCart(); renderCart(); }
 
-// ===== CHECKOUT (kept same) =====
+// ===== Checkout =====
 document.getElementById("checkoutForm").addEventListener("submit", e=>{
   e.preventDefault();
   if(cart.length===0){ showToast("Cart is empty!"); return; }
@@ -282,37 +363,15 @@ document.getElementById("checkoutForm").addEventListener("submit", e=>{
   document.getElementById("status").textContent="Order placed!";
 });
 
-// ===== EVENTS: sidebar open/close + cart modal =====
-// NOTE: we toggle body.sidebar-open to shift main consistently
-const menuBtn = document.querySelector(".menu-btn");
-const sidebar = document.getElementById("sidebar");
-const closeSidebar = document.getElementById("closeSidebar");
+// ===== Modal =====
+const modal=document.getElementById("cartModal");
+document.getElementById("cart-btn").onclick=()=>{ renderCart(); modal.classList.add("show"); }
+document.getElementById("closeCart").onclick=()=>modal.classList.remove("show");
+modal.addEventListener("click",e=>{ if(e.target===modal) modal.classList.remove("show"); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") modal.classList.remove("show"); });
 
-menuBtn.addEventListener("click", () => {
-  const isOpen = sidebar.classList.toggle("show");
-  // add/remove body class to shift main content (reliable on all layouts)
-  document.body.classList.toggle("sidebar-open", isOpen);
-});
-closeSidebar.addEventListener("click", () => {
-  sidebar.classList.remove("show");
-  document.body.classList.remove("sidebar-open");
-});
-
-// cart modal open/close
-document.querySelector(".cart-btn").addEventListener("click", ()=>{ document.getElementById("cartModal").classList.add("show"); renderCart(); });
-document.getElementById("closeCart").addEventListener("click", ()=>{ document.getElementById("cartModal").classList.remove("show"); });
-
-window.addEventListener("keydown", e => {
-  if(e.key === "Escape"){
-    document.getElementById("cartModal").classList.remove("show");
-    sidebar.classList.remove("show");
-    document.body.classList.remove("sidebar-open");
-  }
-});
-
-// initialize
-renderProducts();
-renderCart();
+// ===== Init =====
+renderProducts(); updateCartCount();
 </script>
 </body>
 </html>
