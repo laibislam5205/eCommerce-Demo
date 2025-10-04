@@ -5,18 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShopWave</title>
 <style>
+/* ---------- Base styles (unchanged structure) ---------- */
 body {
   margin: 0;
   font-family: Poppins, sans-serif;
   background: #f5f5f5;
-  transition: margin-left 0.3s ease;
+}
+
+/* simple reset for anchor/list visuals */
+ul { list-style: none; padding: 0; margin: 0; }
+
+/* ===== NAVBAR (top) ===== */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  color: #fff;
+  padding: 10px 20px;
+}
+nav .menu-btn, nav .cart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+nav .menu-btn img, nav .cart-btn img {
+  width: 25px;
+  height: 25px;
+}
+nav h1 {
+  margin: 0;
+  font-size: 22px;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
   position: fixed;
   top: 0;
-  left: -260px;
+  left: -260px;            /* hidden by default */
   width: 250px;
   height: 100%;
   background: #222;
@@ -31,52 +58,29 @@ body {
   align-items: center;
   justify-content: space-between;
   font-size: 20px;
+  margin: 0 0 12px 0;
 }
-.sidebar img {
-  width: 20px;
-  cursor: pointer;
-}
+.sidebar img { width: 20px; cursor: pointer; }
+.sidebar ul { margin-top: 12px; }
+.sidebar li { padding: 8px 0; cursor: pointer; }
+.sidebar li:hover { color: #0ff; }
 
-/* Sidebar open state */
-.sidebar.show {
-  left: 0;
-}
+/* visible state */
+.sidebar.show { left: 0; }
 
-/* ===== NAVBAR ===== */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #111;
-  color: #fff;
-  padding: 10px 20px;
-}
-nav .menu-btn, nav .cart-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-nav .menu-btn img, nav .cart-btn img {
-  width: 25px;
-  height: 25px;
-}
-nav h1 {
-  margin: 0;
-  font-size: 22px;
-}
-
-/* ===== MAIN CONTENT ===== */
+/* ===== MAIN / PRODUCTS ===== */
+/* main is the wrapper we will shift when sidebar opens */
 main {
   padding: 20px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease; /* smooth slide */
 }
 
-/* When sidebar is open, shift content */
-.sidebar.show ~ main {
-  transform: translateX(250px);
+/* Shift the entire main content when body has the class sidebar-open */
+body.sidebar-open main {
+  transform: translateX(250px); /* same as sidebar width */
 }
 
-/* ===== PRODUCT GRID ===== */
+/* product grid */
 .products {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -86,38 +90,16 @@ main {
   background: #fff;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   text-align: center;
-  transition: transform 0.2s;
+  transition: transform 0.15s;
 }
-.product:hover {
-  transform: scale(1.03);
-}
-.product img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-.product h3 {
-  margin: 10px 0 5px;
-}
-.product p {
-  color: #555;
-  font-size: 14px;
-}
-.product .price {
-  color: #111;
-  font-weight: bold;
-}
-.product button {
-  background: #111;
-  color: #fff;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+.product:hover { transform: scale(1.03); }
+.product img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; }
+.product h3 { margin: 10px 0 6px; }
+.product p { color: #555; font-size: 14px; }
+.product .price { font-weight: bold; margin-top: 6px; }
+.product button { margin-top: 8px; background: #111; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
 
 /* ===== CART MODAL ===== */
 #cartModal {
@@ -129,83 +111,43 @@ main {
   align-items: center; justify-content: center;
   z-index: 1001;
 }
-#cartModal.show {
-  display: flex;
-}
+#cartModal.show { display: flex; }
 .modal-content {
   background: #fff;
-  width: 400px;
-  max-width: 90%;
+  width: 420px;
+  max-width: 94%;
   padding: 20px;
   border-radius: 10px;
   position: relative;
 }
-.close-btn {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  cursor: pointer;
-  font-size: 18px;
-  color: #555;
-}
-.cart-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.cart-item img {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-}
-.cart-item b {
-  font-size: 15px;
-}
-.cart-item .muted {
-  color: #777;
-  font-size: 13px;
-}
-.cart-item .qty-controls {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.btn {
-  background: #111;
-  color: #fff;
-  border: none;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.btn.grey {
-  background: #aaa;
-  color: #000;
-}
-.cart-empty {
-  text-align: center;
-  color: #777;
-}
+.close-btn { position: absolute; right: 12px; top: 8px; font-size: 20px; cursor: pointer; color: #666; }
 
-/* ===== TOAST ===== */
+/* cart items */
+.cart-item { display:flex; gap:10px; align-items:center; margin-bottom: 10px; }
+.cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
+.muted { color:#777; font-size:13px; }
+.qty-controls { display:flex; align-items:center; gap:6px; }
+.btn { background:#111; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; }
+.btn.grey { background:#ddd; color:#000; }
+
+/* empty cart */
+.cart-empty { text-align:center; color:#777; padding:12px; }
+
+/* checkout form small styling */
+form { margin-top: 12px; display:flex; flex-direction:column; gap:8px; }
+input, button[type="submit"] { padding:8px; border-radius:6px; border:1px solid #ccc; }
+button[type="submit"] { background:#111; color:#fff; border:none; cursor:pointer; }
+
+/* toast */
 .toast {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #111;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
+  bottom: 16px;
+  right: 16px;
+  background:#111; color:#fff; padding:10px 14px; border-radius:6px; opacity:0; transform: translateY(8px);
+  transition: all 0.2s;
   z-index: 2000;
 }
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+.toast.show { opacity:1; transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -219,11 +161,11 @@ main {
 <div class="sidebar" id="sidebar">
   <h2>Categories <img src="images/arrow.png" id="closeSidebar" alt="Close"></h2>
   <ul>
-    <li>All Products</li>
-    <li>Clothing</li>
-    <li>Accessories</li>
-    <li>Sports</li>
-    <li>Outdoor</li>
+    <li data-cat="All">All Products</li>
+    <li data-cat="Clothing">Clothing</li>
+    <li data-cat="Accessories">Accessories</li>
+    <li data-cat="Sports">Sports</li>
+    <li data-cat="Outdoor">Outdoor</li>
   </ul>
 </div>
 
@@ -238,11 +180,11 @@ main {
     <div id="cartContent"></div>
     <p id="totals"></p>
     <form id="checkoutForm">
-      <input type="text" name="name" placeholder="Name" required><br><br>
-      <input type="email" name="email" placeholder="Email" required><br><br>
-      <button class="btn">Checkout</button>
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <button type="submit">Checkout</button>
+      <p id="status"></p>
     </form>
-    <p id="status"></p>
   </div>
 </div>
 
@@ -263,35 +205,36 @@ const PRODUCTS = [
 
 // ===== RENDER PRODUCTS =====
 function renderProducts(){
-  const grid=document.getElementById("productGrid");
-  grid.innerHTML="";
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
   PRODUCTS.forEach(p=>{
-    grid.innerHTML+=`
-      <div class="product">
-        <img src="${p.img}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>${p.desc}</p>
-        <div class="price">BDT ${p.price}</div>
-        <button onclick="addToCart(${p.id})">Add to Cart</button>
-      </div>`;
+    const card = document.createElement("div");
+    card.className = "product";
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+      <div class="price">BDT ${p.price}</div>
+      <button onclick="addToCart(${p.id})">Add to Cart</button>
+    `;
+    grid.appendChild(card);
   });
 }
 
-// ===== CART =====
-let cart=JSON.parse(localStorage.getItem("cart")||"[]");
-function saveCart(){ localStorage.setItem("cart",JSON.stringify(cart)); }
-
+// ===== CART STORAGE & TOAST =====
+let cart = JSON.parse(localStorage.getItem("cart")||"[]");
+function saveCart(){ localStorage.setItem("cart", JSON.stringify(cart)); }
 function showToast(msg){
-  const t=document.getElementById("toast");
-  t.textContent=msg;
+  const t = document.getElementById("toast");
+  t.textContent = msg;
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),2000);
+  setTimeout(()=>t.classList.remove("show"), 2000);
 }
 
-// ===== Cart Actions =====
+// ===== CART ACTIONS (kept exactly as you provided) =====
 function addToCart(id){ 
-  let item=cart.find(i=>i.id===id); 
-  if(item){ item.qty++; } else { cart.push({id,qty:1}); } 
+  let item = cart.find(i => i.id === id); 
+  if(item){ item.qty++; } else { cart.push({id, qty:1}); } 
   saveCart(); renderCart(id); showToast("Added to cart!"); 
 }
 
@@ -327,7 +270,7 @@ function renderCart(highlightId){
 function updateQty(id,val){ let it=cart.find(i=>i.id===id); if(it){ it.qty=Math.max(1,Number(val)); saveCart(); renderCart(); } }
 function removeItem(id){ cart=cart.filter(i=>i.id!==id); saveCart(); renderCart(); }
 
-// ===== Checkout =====
+// ===== CHECKOUT (kept same) =====
 document.getElementById("checkoutForm").addEventListener("submit", e=>{
   e.preventDefault();
   if(cart.length===0){ showToast("Cart is empty!"); return; }
@@ -339,22 +282,37 @@ document.getElementById("checkoutForm").addEventListener("submit", e=>{
   document.getElementById("status").textContent="Order placed!";
 });
 
-// ===== EVENTS =====
-document.querySelector(".menu-btn").addEventListener("click",()=>{document.getElementById("sidebar").classList.add("show");});
-document.getElementById("closeSidebar").addEventListener("click",()=>{document.getElementById("sidebar").classList.remove("show");});
-document.querySelector(".cart-btn").addEventListener("click",()=>{document.getElementById("cartModal").classList.add("show");});
-document.getElementById("closeCart").addEventListener("click",()=>{document.getElementById("cartModal").classList.remove("show");});
+// ===== EVENTS: sidebar open/close + cart modal =====
+// NOTE: we toggle body.sidebar-open to shift main consistently
+const menuBtn = document.querySelector(".menu-btn");
+const sidebar = document.getElementById("sidebar");
+const closeSidebar = document.getElementById("closeSidebar");
 
-window.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){
+menuBtn.addEventListener("click", () => {
+  const isOpen = sidebar.classList.toggle("show");
+  // add/remove body class to shift main content (reliable on all layouts)
+  document.body.classList.toggle("sidebar-open", isOpen);
+});
+closeSidebar.addEventListener("click", () => {
+  sidebar.classList.remove("show");
+  document.body.classList.remove("sidebar-open");
+});
+
+// cart modal open/close
+document.querySelector(".cart-btn").addEventListener("click", ()=>{ document.getElementById("cartModal").classList.add("show"); renderCart(); });
+document.getElementById("closeCart").addEventListener("click", ()=>{ document.getElementById("cartModal").classList.remove("show"); });
+
+window.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
     document.getElementById("cartModal").classList.remove("show");
-    document.getElementById("sidebar").classList.remove("show");
+    sidebar.classList.remove("show");
+    document.body.classList.remove("sidebar-open");
   }
 });
 
+// initialize
 renderProducts();
 renderCart();
 </script>
-
 </body>
 </html>
