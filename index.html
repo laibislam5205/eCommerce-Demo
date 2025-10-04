@@ -4,136 +4,186 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SimpleShop — Demo</title>
-  <body>
-  <header>
+  <style>
+    :root {
+      --accent: #2c7be5;
+      --muted: #666;
+      --bg: #f6f6f8;
+      --white: #fff;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: Arial,sans-serif; margin:0; background:var(--bg); color:#111; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:var(--white); border-bottom:1px solid #e5e5e5; position:relative; z-index:5; }
+    #cart-btn { position: relative; cursor:pointer; width:28px; height:28px; }
+    #cart-count { position:absolute; top:-6px; right:-10px; background:var(--accent); color:var(--white); font-size:12px; padding:2px 6px; border-radius:50%; }
 
-    <!-- Left menu button -->
-    <button id="menuBtn" class="icon-btn">☰</button>
+    .btn { background:var(--accent); color:var(--white); padding:8px 12px; border:none; border-radius:6px; cursor:pointer; transition:0.2s; }
+    .btn:hover { background:#1a5fcc; }
+    .btn.grey { background:#999; }
+    .btn.grey:hover { background:#777; }
 
-    <h1>SimpleShop (Demo)</h1>
+    .container { max-width:1250px; margin:20px auto; padding:0 16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(234px,1fr)); gap:20px; }
+    .card { background:var(--white); border-radius:10px; padding:14px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display:flex; flex-direction:column; transition:0.2s; }
+    .card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform:translateY(-2px); }
+    .card img { width:100%; height:200px; object-fit:cover; border-radius:8px; }
+    .card h3 { margin:10px 0 6px; font-size:16px; }
+    .price { font-weight:bold; margin-top:auto; }
+    .muted { color:var(--muted); font-size:14px; line-height:1.4; }
 
-    <!-- Right cart button -->
-    <div style="position:relative;">
-      <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
-    <span id="cart-count">0</span>
-    </div>
-  </header>
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease; z-index:1000; }
+    .modal.show { display:flex; opacity:1; }
+    .panel { background:var(--white); border-radius:10px; padding:18px; max-width:900px; width:95%; max-height:90%; overflow-y:auto; }
+    .row { display:flex; justify-content:space-between; align-items:center; }
+    .cart-list { margin-top:12px; }
+    .cart-item { display:flex; gap:10px; align-items:center; border-bottom:1px dashed #eee; padding:8px 0; }
+    .cart-item img { width:64px; height:64px; border-radius:6px; object-fit:cover; }
+    .qty-controls { display:flex; align-items:center; gap:4px; }
+    .qty-controls input { width:50px; text-align:center; padding:4px; border-radius:4px; border:1px solid #ccc; }
 
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <h2 id="sidebar-header" style="display:flex; justify-content:space-between; align-items:center;"> Categories <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;"></h2>   
-    <ul>
-      <li onclick="renderProducts('All')">All</li>
-      <li onclick="renderProducts('Clothing')">Clothing</li>
-      <li onclick="renderProducts('Accessories')">Accessories</li>
-      <li onclick="renderProducts('Gear')">Gear</li>
-    </ul>
-  </div>
-  <div id="content">
-    <main class="container">
-      <div id="products" class="grid"></div>
-    </main>
-  </div>
+    form { margin-top:12px; display:grid; gap:10px; }
+    label { font-size:14px; display:flex; flex-direction:column; }
+    input { padding:6px; border:1px solid #ccc; border-radius:5px; }
+    input:focus { outline:2px solid var(--accent); }
+    .actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
 
-  <!-- Cart Modal -->
-  <div id="cartModal" class="modal">
-    <div class="panel">
-      <div class="row">
-        <h2>Shopping Cart</h2>
-        <button id="closeCart" class="btn grey">Close</button>
-      </div>
-      <div id="cartContent" class="cart-list"></div>
-      <div id="totals" class="muted"></div>
-      <hr>
-      <h3>Checkout</h3>
-      <form id="checkoutForm">
-        <label>Name <input name="name" required></label>
-        <label>Email <input name="email" type="email" required></label>
-        <label>Address <input name="address" required></label>
-        <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
-        <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
-        <div class="actions">
-          <div id="status" class="muted"></div>
-          <button type="button" id="clearBtn" class="btn grey">Clear cart</button>
-          <button type="submit" class="btn">Place order</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    /* Toast Notification */
+    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#2c7be5; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s ease; z-index:9999; }
+    .toast.show { opacity:1; }
+
+    /* Empty cart animation */
+    .cart-empty { text-align:center; font-size:18px; color:var(--muted); animation:bounce 1s infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+    /* Highlight new item in cart */
+    .cart-item.added { animation:flash 0.5s ease-in-out; }
+    @keyframes flash { 0%{background-color:#fff3cd;} 100%{background-color:var(--white);} }
+
+    /* Nav animation */
+    nav {
+        overflow: hidden;
+        position:fixed;
+        top:0;
+        left:0;
+        transform: translateX(-300px);
+        height: 100%;
+        width: 300px;
+        transition: all 800ms cubic-bezier(.8, 0, .33, 1);
+        border-radius: 0% 0% 100% 50%;
+        z-index:1000;
+        background: rgba(255, 255, 255, 0.95);
+    }
+    nav.nav-open {
+        transform: translateX(0px);
+        border-radius: 0% 0% 0% 0%;
+    }
+    nav .sidebar {
+        position: absolute;
+        top: 10%;
+        right: 5%;
+        padding: 0;
+        width: 30px;
+        cursor: pointer;
+        z-index: 2;
+    }
+    nav .sidebar .line {
+        padding: 0;
+        width: 30px;
+        background: #333;
+        height: 2px;
+        margin: 5px 0;
+        transition: all 700ms cubic-bezier(.9, 0, .33, 1);
+    }
+    nav .sidebar .line.line--1.line-cross { transform: rotate(45deg) translateY(10px); }
+    nav .sidebar .line.line--2.line-fade-out { transform: translateX(30px); opacity:0; }
+    nav .sidebar .line.line--3.line-cross { transform: rotate(-45deg) translateY(-10px); }
+    nav .nav-links {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(-100px);
+        opacity: 0;
+        transition: all 900ms cubic-bezier(.9, 0, .33, 1);
+    }
+    nav .nav-links.fade-in {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+    nav .nav-links .link {
+        margin: 20px 0;
+        text-decoration: none;
+        font-family: sans-serif;
+        color: rgba(0,0,0,0.9);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 1.2rem;
+        transition: all 300ms cubic-bezier(.9, 0, .33, 1);
+    }
+    nav .nav-links .link:hover { color: rgba(0, 0, 0, .5); }
+  </style>
 </head>
+<body>
 
-<style>
-  :root {
-    --accent: #2c7be5;
-    --muted: #666;
-    --bg: #f6f6f8;
-    --white: #fff;
-  }
-  body { font-family: Arial,sans-serif; margin:0; background:var(--bg); color:#111; }
-  header { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:var(--white); border-bottom:1px solid #e5e5e5; }
-  .icon-btn { background:none; border:none; font-size:22px; cursor:pointer; color:#333; }
-  .icon-btn:hover { color: var(--accent); }
-  #cart-btn { position: relative; cursor:pointer; width:28px; height:28px; }
-  #cart-count { position:absolute; top:-6px; right:-10px; background:var(--accent); color:var(--white); font-size:12px; padding:2px 6px; border-radius:50%; }
+<header>
+  <h1>SimpleShop (Demo)</h1>
+  <div style="position:relative;">
+    <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
+    <span id="cart-count">0</span>
+  </div>
+</header>
 
-  .btn { background:var(--accent); color:var(--white); padding:8px 12px; border:none; border-radius:6px; cursor:pointer; transition:0.2s; }
-  .btn:hover { background:#1a5fcc; }
-  .btn.grey { background:#999; }
-  .btn.grey:hover { background:#777; }
+<nav>
+  <div class="sidebar"> 
+    <div class="line line--1"></div>
+    <div class="line line--2"></div>
+    <div class="line line--3"></div>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="link" onclick="renderProducts('All')">Home</a>
+    <a href="#" class="link" onclick="renderProducts('Clothing')">Clothing</a>
+    <a href="#" class="link" onclick="renderProducts('Accessories')">Accessories</a>
+    <a href="#" class="link" onclick="renderProducts('Gear')">Gear</a>
+  </div>
+</nav>
 
-  .container { max-width:1250px; margin:20px auto; padding:0 16px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(234px,1fr)); gap:20px; }
-  .card { background:var(--white); border-radius:10px; padding:14px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display:flex; flex-direction:column; transition:0.2s; }
-  .card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform:translateY(-2px); }
-  .card img { width:100%; height:200px; object-fit:cover; border-radius:8px; }
-  .card h3 { margin:10px 0 6px; font-size:16px; }
-  .price { font-weight:bold; margin-top:auto; }
-  .muted { color:var(--muted); font-size:14px; line-height:1.4; }
+<div class="container">
+  <main id="products" class="grid"></main>
+</div>
 
-  /* Sidebar */
-  #sidebar { position:fixed; top:0; left:-300px; width:210px; height:100%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.2); transition:left 0.3s ease; padding:20px; z-index:1000; }
-  #content { transition: margin-left 0.3s ease; }
-  #sidebar.active ~ #content { margin-left: 250px; /* same as sidebar width */ }
-  #sidebar.active { left:0; }
-  #sidebar h2 { display: flex; justify-content: space-between; align-items: center; margin: 0; }
-  #sidebar h2 img { width: 22px; height: 22px; cursor: pointer; }
-  #sidebar ul { list-style:none; padding:0; margin:60px 0 0; }
-  #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
-
-  /* Modal */
-  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease; z-index:1000; }
-  .modal.show { display:flex; opacity:1; }
-  .panel { background:var(--white); border-radius:10px; padding:18px; max-width:900px; width:95%; max-height:90%; overflow-y:auto; }
-  .row { display:flex; justify-content:space-between; align-items:center; }
-  .cart-list { margin-top:12px; }
-  .cart-item { display:flex; gap:10px; align-items:center; border-bottom:1px dashed #eee; padding:8px 0; }
-  .cart-item img { width:64px; height:64px; border-radius:6px; object-fit:cover; }
-  .qty-controls { display:flex; align-items:center; gap:4px; }
-  .qty-controls input { width:50px; text-align:center; padding:4px; border-radius:4px; border:1px solid #ccc; }
-
-  form { margin-top:12px; display:grid; gap:10px; }
-  label { font-size:14px; display:flex; flex-direction:column; }
-  input { padding:6px; border:1px solid #ccc; border-radius:5px; }
-  input:focus { outline:2px solid var(--accent); }
-
-  .actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
-
-  /* Toast Notification */
-  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#2c7be5; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s ease; z-index:9999; }
-  .toast.show { opacity:1; }
-
-  /* Empty cart animation */
-  .cart-empty { text-align:center; font-size:18px; color:var(--muted); animation:bounce 1s infinite; }
-  @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
-
-  /* Highlight new item in cart */
-  .cart-item.added { animation:flash 0.5s ease-in-out; }
-  @keyframes flash { 0%{background-color:#fff3cd;} 100%{background-color:var(--white);} }
-</style>
+<!-- Cart Modal -->
+<div id="cartModal" class="modal">
+  <div class="panel">
+    <div class="row">
+      <h2>Shopping Cart</h2>
+      <button id="closeCart" class="btn grey">Close</button>
+    </div>
+    <div id="cartContent" class="cart-list"></div>
+    <div id="totals" class="muted"></div>
+    <hr>
+    <h3>Checkout</h3>
+    <form id="checkoutForm">
+      <label>Name <input name="name" required></label>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Address <input name="address" required></label>
+      <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
+      <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
+      <div class="actions">
+        <div id="status" class="muted"></div>
+        <button type="button" id="clearBtn" class="btn grey">Clear cart</button>
+        <button type="submit" class="btn">Place order</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
-  
-// ===== Products =====
 const PRODUCTS = [
   {id:1,name:"Classic Tee",price:2399.99,img:"images/product1.jpeg",desc:"Cotton tee, unisex."},
   {id:2,name:"Denim Jacket",price:4799.99,img:"images/product2.jpeg",desc:"Stylish denim jacket."},
@@ -154,12 +204,10 @@ const PRODUCTS = [
 
 let cart = JSON.parse(localStorage.getItem("simpleCart")||"[]");
 
-// ===== Helper Functions =====
 function saveCart(){ localStorage.setItem("simpleCart",JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount(){ document.getElementById("cart-count").textContent = cart.reduce((s,i)=>s+i.qty,0); }
 function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.classList.add("show"),10); setTimeout(()=>{t.classList.remove("show"); setTimeout(()=>t.remove(),300)},2000); }
 
-// ===== Render Products =====
 function renderProducts(category="All"){
   const container = document.getElementById("products");
   container.innerHTML="";
@@ -183,7 +231,6 @@ function renderProducts(category="All"){
   });
 }
 
-// ===== Cart Actions =====
 function addToCart(id){ 
   let item=cart.find(i=>i.id===id); 
   if(item){ item.qty++; } else { cart.push({id,qty:1}); } 
@@ -222,7 +269,6 @@ function renderCart(highlightId){
 function updateQty(id,val){ let it=cart.find(i=>i.id===id); if(it){ it.qty=Math.max(1,Number(val)); saveCart(); renderCart(); } }
 function removeItem(id){ cart=cart.filter(i=>i.id!==id); saveCart(); renderCart(); }
 
-// ===== Checkout =====
 document.getElementById("checkoutForm").addEventListener("submit", e=>{
   e.preventDefault();
   if(cart.length===0){ showToast("Cart is empty!"); return; }
@@ -234,24 +280,32 @@ document.getElementById("checkoutForm").addEventListener("submit", e=>{
   document.getElementById("status").textContent="Order placed!";
 });
 
-// ===== Modal Controls & Sidebar=====
 const modal=document.getElementById("cartModal");
 document.getElementById("cart-btn").onclick=()=>{ renderCart(); modal.classList.add("show"); }
 document.getElementById("closeCart").onclick=()=>{ modal.classList.remove("show"); }
 document.getElementById("clearBtn").onclick=()=>{ if(confirm("Clear cart?")){ cart=[]; saveCart(); renderCart(); } }
 modal.addEventListener("click", e=>{ if(e.target===modal){ modal.classList.remove("show"); } });
-document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modal.classList.contains("show")) modal.classList.remove("show"); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ modal.classList.remove("show"); } });
 
-// Sidebar actions
-const sidebar=document.getElementById("sidebar");
-document.getElementById("menuBtn").onclick=()=>sidebar.classList.add("active");
-document.getElementById("close-sidebar").onclick=()=>sidebar.classList.remove("active");
+renderProducts(); updateCartCount();
 
-// ===== Init =====
-renderProducts();
-updateCartCount();
+
+// Nav animation
+var menuBtn=document.querySelector('nav .sidebar');
+var nav=document.querySelector('nav');
+var lineOne=document.querySelector('nav .line--1');
+var lineTwo=document.querySelector('nav .line--2');
+var lineThree=document.querySelector('nav .line--3');
+var links=document.querySelector('nav .nav-links');
+
+menuBtn.addEventListener('click',()=>{
+    nav.classList.toggle('nav-open');
+    lineOne.classList.toggle('line-cross');
+    lineTwo.classList.toggle('line-fade-out');
+    lineThree.classList.toggle('line-cross');
+    links.classList.toggle('fade-in');
+});
 </script>
+
 </body>
 </html>
-
-
