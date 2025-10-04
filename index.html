@@ -95,8 +95,8 @@
   #content { transition: margin-left 0.3s ease; }
   #sidebar.active ~ #content { margin-left: 250px; /* same as sidebar width */ }
   #sidebar.active { left:0; }
-  #sidebar h2 { margin-top:5; display:flex; justify-content:left; align-items:center; }
-  #sidebar h3 img { width:20px; height:20px; cursor:pointer; position: right; }
+  #sidebar h2 { display: flex; justify-content: space-between; align-items: center; margin: 0; }
+  #sidebar h2 img { width: 22px; height: 22px; cursor: pointer; }
   #sidebar ul { list-style:none; padding:0; margin:60px 0 0; }
   #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
 
@@ -132,7 +132,7 @@
 </style>
 
 <script>
-
+  
 // ===== Products =====
 const PRODUCTS = [
   {id:1,name:"Classic Tee",price:2399.99,img:"images/product1.jpeg",desc:"Cotton tee, unisex."},
@@ -174,7 +174,7 @@ function renderProducts(category="All"){
       <h3>${p.name}</h3>
       <div class="muted">${p.desc}</div>
       <div class="row">
-        <div class="price">BDT ${p.price}</div>
+        <div class="price">BDT ${p.price.toFixed(2)}</div>
         <button class="btn">Add</button>
       </div>
     `;
