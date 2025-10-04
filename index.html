@@ -91,12 +91,29 @@
     .muted { color:var(--muted); font-size:14px; line-height:1.4; }
 
     /* Sidebar */
-    #sidebar { position:fixed; top:0; left:-300px; width:250px; height:100%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.2); transition:left 0.3s ease; padding:20px; z-index:1000; }
+    #sidebar {
+      position:fixed;
+      top:0;
+      left:0;
+      width:250px;
+      height:100%;
+      background:white;
+      box-shadow:2px 0 5px rgba(0,0,0,0.2);
+      padding:20px;
+      z-index:1000;
+      transform: translateX(-300px);
+      transition: transform 0.3s ease;
+    }
+    #sidebar.active {
+      transform: translateX(0);
+    }
     #content { transition: margin-left 0.3s ease; }
-    #sidebar.active ~ #content { margin-left: 250px; /* same as sidebar width */ }
-    #sidebar.active { left:0; }
-    #sidebar h2 { margin-top:5; display:flex; justify-content:left; align-items:center; }
-    #sidebar h3 img { width:20px; height:20px; cursor:pointer; position: right; }
+    #sidebar.active ~ #content { margin-left: 250px; }
+    #sidebar h2 { margin-top: 5px; display:flex; justify-content:left; align-items:center; }
+    #sidebar-header img {
+      margin-left: 8px;
+      cursor: pointer;
+    }
     #sidebar ul { list-style:none; padding:0; margin:60px 0 0; }
     #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
 
@@ -254,3 +271,4 @@ updateCartCount();
 </script>
 </body>
 </html>
+
