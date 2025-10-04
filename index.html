@@ -1,67 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body>
-<header>
-
-  <!-- Left menu button -->
-  <button id="menuBtn" class="icon-btn">☰</button>
-
-  <h1>SimpleShop (Demo)</h1>
-
-  <!-- Right cart button -->
-  <div style="position:relative;">
-    <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
-    <span id="cart-count">0</span>
-  </div>
-</header>
-
-<!-- Sidebar -->
-<div id="sidebar">
-  <h2 id="sidebar-header" style="display:flex; justify-content:space-between; align-items:center;"> Categories <img src="images/back-arrow.png" id="close-sidebar" alt="Close" style="height:20px;"></h2>   
-  <ul>
-    <li onclick="renderProducts('All')">All</li>
-    <li onclick="renderProducts('Clothing')">Clothing</li>
-    <li onclick="renderProducts('Accessories')">Accessories</li>
-    <li onclick="renderProducts('Gear')">Gear</li>
-  </ul>
-</div>
-<div id="content">
-  <main class="container">
-    <div id="products" class="grid"></div>
-  </main>
-</div>
-
-<!-- Cart Modal -->
-<div id="cartModal" class="modal">
-  <div class="panel">
-    <div class="row">
-      <h2>Shopping Cart</h2>
-      <button id="closeCart" class="btn grey">Close</button>
-    </div>
-    <div id="cartContent" class="cart-list"></div>
-    <div id="totals" class="muted"></div>
-    <hr>
-    <h3>Checkout</h3>
-    <form id="checkoutForm">
-      <label>Name <input name="name" required></label>
-      <label>Email <input name="email" type="email" required></label>
-      <label>Address <input name="address" required></label>
-      <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
-      <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
-      <div class="actions">
-        <div id="status" class="muted"></div>
-        <button type="button" id="clearBtn" class="btn grey">Clear cart</button>
-        <button type="submit" class="btn">Place order</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SimpleShop — Demo</title>
+
+  <!-- ✅ Added Font Awesome for modern icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     :root {
       --accent: #2c7be5;
@@ -109,11 +56,24 @@
     }
     #content { transition: margin-left 0.3s ease; }
     #sidebar.active ~ #content { margin-left: 250px; }
-    #sidebar h2 { margin-top: 5px; display:flex; justify-content:left; align-items:center; }
-    #sidebar-header img {
-      margin-left: 8px;
-      cursor: pointer;
+
+    /* ✅ Sidebar header with close button */
+    #sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5px;
     }
+    #sidebar-header h2 { margin: 0; }
+    #sidebar-header button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #333;
+    }
+    #sidebar-header button:hover { color: var(--accent); }
+
     #sidebar ul { list-style:none; padding:0; margin:60px 0 0; }
     #sidebar ul li { margin:15px 0; cursor:pointer; color:#333; }
 
@@ -135,9 +95,20 @@
 
     .actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
 
-    /* Toast Notification */
-    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#2c7be5; color:#fff; padding:10px 16px; border-radius:6px; opacity:0; transition:opacity 0.3s ease; z-index:9999; }
-    .toast.show { opacity:1; }
+    /* ✅ Improved Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #222;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+    }
+    #toast.show { opacity: 1; }
 
     /* Empty cart animation */
     .cart-empty { text-align:center; font-size:18px; color:var(--muted); animation:bounce 1s infinite; }
@@ -149,8 +120,66 @@
   </style>
 </head>
 
-<script>
+<body>
+<header>
+  <button id="menuBtn" class="icon-btn">☰</button>
+  <h1>SimpleShop (Demo)</h1>
+  <div style="position:relative;">
+    <img src="images/shopping-bag.png" id="cart-btn" alt="Cart">
+    <span id="cart-count">0</span>
+  </div>
+</header>
 
+<!-- ✅ Updated Sidebar Header -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h2>Categories</h2>
+    <button id="closeMenu"><i class="fa-solid fa-chevron-left"></i></button>
+  </div>
+  <ul>
+    <li onclick="renderProducts('All')">All</li>
+    <li onclick="renderProducts('Clothing')">Clothing</li>
+    <li onclick="renderProducts('Accessories')">Accessories</li>
+    <li onclick="renderProducts('Gear')">Gear</li>
+  </ul>
+</div>
+
+<div id="content">
+  <main class="container">
+    <div id="products" class="grid"></div>
+  </main>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal">
+  <div class="panel">
+    <div class="row">
+      <h2>Shopping Cart</h2>
+      <button id="closeCart" class="btn grey">Close</button>
+    </div>
+    <div id="cartContent" class="cart-list"></div>
+    <div id="totals" class="muted"></div>
+    <hr>
+    <h3>Checkout</h3>
+    <form id="checkoutForm">
+      <label>Name <input name="name" required></label>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Address <input name="address" required></label>
+      <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
+      <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
+      <div class="actions">
+        <div id="status" class="muted"></div>
+        <button type="button" id="clearBtn" class="btn grey">Clear cart</button>
+        <button type="submit" class="btn">Place order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ✅ Toast Container -->
+<div id="toast"></div>
+
+<script>
 // ===== Products =====
 const PRODUCTS = [
   {id:1,name:"Classic Tee",price:2399.99,img:"images/product1.jpeg",desc:"Cotton tee, unisex."},
@@ -171,11 +200,18 @@ const PRODUCTS = [
 ];
 
 let cart = JSON.parse(localStorage.getItem("simpleCart")||"[]");
+const toast = document.getElementById("toast");
 
 // ===== Helper Functions =====
 function saveCart(){ localStorage.setItem("simpleCart",JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount(){ document.getElementById("cart-count").textContent = cart.reduce((s,i)=>s+i.qty,0); }
-function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.classList.add("show"),10); setTimeout(()=>{t.classList.remove("show"); setTimeout(()=>t.remove(),300)},2000); }
+
+// ✅ Improved toast function
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2000);
+}
 
 // ===== Render Products =====
 function renderProducts(category="All"){
@@ -252,7 +288,7 @@ document.getElementById("checkoutForm").addEventListener("submit", e=>{
   document.getElementById("status").textContent="Order placed!";
 });
 
-// ===== Modal Controls & Sidebar=====
+// ===== Modal Controls =====
 const modal=document.getElementById("cartModal");
 document.getElementById("cart-btn").onclick=()=>{ renderCart(); modal.classList.add("show"); }
 document.getElementById("closeCart").onclick=()=>{ modal.classList.remove("show"); }
@@ -263,7 +299,8 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modal.classList
 // Sidebar actions
 const sidebar=document.getElementById("sidebar");
 document.getElementById("menuBtn").onclick=()=>sidebar.classList.add("active");
-document.getElementById("close-sidebar").onclick=()=>sidebar.classList.remove("active");
+// ✅ Updated closeMenu JS
+document.getElementById("closeMenu").onclick = () => sidebar.classList.remove("active");
 
 // ===== Init =====
 renderProducts();
@@ -271,4 +308,3 @@ updateCartCount();
 </script>
 </body>
 </html>
-
