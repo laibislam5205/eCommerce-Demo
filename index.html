@@ -194,10 +194,12 @@
     transform: translateY(-5px);
   }
 
-  }
+  /* === Ensures the bottom row (price + button) stays at bottom === */
   .card .row {
-    margin-top: auto; /* pushes row to bottom of card */
-  }
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+  } 
   .card:hover { 
     box-shadow:0 4px 12px rgba(0,0,0,0.1); 
     transform:translateY(-2px); 
