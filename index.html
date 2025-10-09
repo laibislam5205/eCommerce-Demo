@@ -12,6 +12,8 @@
     --bg: #f6f6f8;
     --white: #fff;
   }
+
+  * { box-sizing: border-box; }
   body { 
     font-family: Arial,sans-serif; 
     margin:0; 
@@ -19,6 +21,7 @@
     color:#111; 
     overflow-x: hidden;
   }
+
   body.sidebar-open::after {
     content: '';
     position: fixed;
@@ -122,7 +125,7 @@
   }
 
   .container { 
-    max-width:1250px; 
+    max-width:1400px; 
     margin:20px auto; 
     padding:0 16px; 
   }
@@ -130,6 +133,7 @@
   /* Smoothly shrink products when sidebar opens */
   #content { 
     transition: all 0.5s cubic-bezier(0.8, 0, 0.33, 1);
+    width: 100%;
     max-width: 1250px; 
     margin:0 auto; 
     position:relative; 
@@ -148,18 +152,18 @@
   #content {
     transition: all 0.5s cubic-bezier(0.8, 0, 0.33, 1);
     width: calc(100% - 0px); /* fill viewport */
-    max-width: 1250px;
+    max-width: 1350px;
     margin: 0 auto;
     position: relative;
   }
   #content.shift-right {
-    transform: translateX(100px); /* move right */
+    transform: translateX(150px); /* move right */
     width: calc(100% - 100px);   /* shrink so it stays inside page */
     max-width: calc(1350px - 200px); /* optional: respect original max-width */
   }
   .grid { 
     display:grid; 
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:20px; 
   }
 
@@ -178,6 +182,9 @@
     flex-direction:column; 
     transition:0.2s; 
   }
+  .card .row {
+    margin-top: auto; /* pushes row to bottom of card */
+  }
   .card:hover { 
     box-shadow:0 4px 12px rgba(0,0,0,0.1); 
     transform:translateY(-2px); 
@@ -186,7 +193,8 @@
     width:100%; 
     height:200px; 
     object-fit:cover; 
-    border-radius:8px; 
+    border-radius:8px;
+    transition: 0.3s; 
   }
   .card h3 { 
     margin:10px 0 6px; 
@@ -210,16 +218,19 @@
     box-sizing: border-box; 
   } 
   nav { 
-    overflow: hidden; 
     position: fixed; 
-    top:0; left:0; 
+    top:0; 
+    left:0; 
     height:100%; 
-    width:200px; 
+    width:280px; 
     transform: translateX(-100%); 
-    transition: transform 0.5s cubic-bezier(0.8,0,0.33,1);
+    transition: transform 0.4s ease;
     z-index:1001; /* make sure it's above all content */
     background: #000;
+    padding-top: 60px;
   }
+
+  /* Open state */
   nav.nav-open {
     transform: translateX(0px);
     border-radius: 0;
@@ -269,20 +280,12 @@
     transform: rotate(-45deg) translateY(-10px);
     background: #fff; 
   } 
+
+  /* Links fade in */
   nav .nav-links {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transform: translateX(-100%); /* hidden offscreen with nav */
-    opacity: 0;
-    transition: transform 0.5s cubic-bezier(0.8,0,0.33,1),
-    opacity 0.5s ease;
   }
   nav .nav-links.fade-in { 
     transform:translateX(0px); 
@@ -295,7 +298,15 @@
     font-weight:700; 
     text-transform:uppercase; 
     font-size:1.2rem; 
-    transition: all 0.3s cubic-bezier(0.9, 0, 0.33, 1);
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* Animate links when nav opens */
+  nav.nav-open .nav-links .link {
+    opacity: 1;
+    transform: translateX(0);
   }
   nav .nav-links .link:hover { 
     color:#aaa; /* light grey hover */
@@ -309,6 +320,12 @@
   a:hover { 
     color: #222; 
   }
+
+  /* Staggered animation (optional) */
+  nav.nav-open .nav-links .link:nth-child(1) { transition-delay: 0.1s; }
+  nav.nav-open .nav-links .link:nth-child(2) { transition-delay: 0.2s; }
+  nav.nav-open .nav-links .link:nth-child(3) { transition-delay: 0.3s; }
+  nav.nav-open .nav-links .link:nth-child(4) { transition-delay: 0.4s; }
 
   /* Modal */
   .modal { 
@@ -335,6 +352,7 @@
     max-height:90%; 
     overflow-y:auto; 
   }
+
   .row { 
     display:flex; 
     justify-content:space-between; 
@@ -349,6 +367,7 @@
     align-items:center; 
     border-bottom:1px dashed #eee; 
     padding:8px 0; 
+    transition: background 0.4s;
   }
   .cart-item img { 
     width:64px; 
@@ -419,6 +438,71 @@
     opacity:1; 
   }
 
+  /* 🌐 General input and textarea styles */
+  input, textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  /* 🔴 Red glow when invalid (empty, wrong format, or less digits) */
+  input:invalid, textarea:invalid {
+    border-color: #e74c3c;
+    box-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+  }
+
+  /* 🟢 Green glow when valid */
+  input:valid, textarea:valid {
+    border-color: #2ecc71;
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
+  }
+
+  /* 🔵 Blue glow on focus */
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);
+  }
+
+  /* 📱 Special wrapper for phone input */
+  .phone-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .phone-wrapper .prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    font-weight: 500;
+    pointer-events: none; /* allows typing normally */
+  }
+
+  /* 📞 Phone input inherits global style but needs left padding */
+  .phone-wrapper input {
+    padding-left: 50px; /* space for +880 */
+    height: 36px;
+  }
+
+  /* Ensure phone input validation (exactly 10 digits) */
+  .phone-wrapper input:invalid {
+    border-color: #e74c3c;
+    box-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+  }
+
+  .phone-wrapper input:valid {
+    border-color: #2ecc71;
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.6);
+  }
+  
   /* Empty cart animation */
   .cart-empty { 
     text-align:center; 
@@ -433,7 +517,10 @@
     0% { background-color: #d4edda; }
     100% { background-color: var(--white); }
   }
-  @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+  @keyframes bounce { 
+    0%,100%{transform:translateY(0);} 
+    50%{transform:translateY(-8px);} 
+  }
 
   /* Highlight new item in cart */
   .cart-item.added { animation:flash 0.5s ease-in-out; }
@@ -491,7 +578,13 @@
       <label>Name <input name="name" required></label>
       <label>Email <input name="email" type="email" required></label>
       <label>Address <input name="address" required></label>
-      <label>Phone <input name="phone" required pattern="\d{10}" title="Enter 10-digit phone number"></label>
+      <label>Phone
+        <div class="phone-wrapper">
+          <span class="prefix">+880</span>
+            <input id="phoneInput" name="phone" required pattern="\d{10}" maxlength="10"
+             title="Enter exactly 10 digits after +880" type="digits">
+        </div>
+      </label>
       <small class="muted">This demo does not process payments. It generates a JSON file as an order summary.</small>
       <div class="actions">
         <div id="status" class="muted"></div>
@@ -527,7 +620,15 @@ let cart = JSON.parse(localStorage.getItem("simpleWave")||"[]");
 // ===== Helper Functions =====
 function saveCart(){ localStorage.setItem("simpleWave",JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount(){ document.getElementById("cart-count").textContent = cart.reduce((s,i)=>s+i.qty,0); }
-function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.classList.add("show"),10); setTimeout(()=>{t.classList.remove("show"); setTimeout(()=>t.remove(),300)},2000); }
+function showToast(msg){ 
+  let t=document.createElement("div"); 
+  t.className="toast"; 
+  t.textContent=msg; 
+  document.body.appendChild(t); 
+  setTimeout(()=>t.classList.add("show"),10); 
+  setTimeout(()=>{t.classList.remove("show"); 
+    setTimeout(()=>t.remove(),300)},2000); 
+}
 
 // ===== Render Products =====
 function renderProducts(category="All"){
@@ -537,8 +638,10 @@ function renderProducts(category="All"){
     (category==="Clothing" && ["Classic Tee","Denim Jacket","Casual Pants","Cotton Socks","Sport Joggers"].includes(p.name)) ||
     (category==="Accessories" && ["Leather Wallet","Wrist Watch","Power Bank","Cable","Phone Case"].includes(p.name)) ||
     (category==="Gear" && ["Bike Gloves","Bike Mask","Bike Helmet","Bike Body Armor","Casual Sneakers"].includes(p.name))
-  ).forEach(p=>{
-    const card=document.createElement("div"); card.className="card";
+  )
+  .forEach(p=>{
+    const card=document.createElement("div"); 
+    card.className="card";
     card.innerHTML=`
       <img src="${p.img}" alt="${p.name}">
       <h3>${p.name}</h3>
