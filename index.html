@@ -213,6 +213,52 @@
     line-height:1.4; 
   }
 
+  /* Card overlay */
+  .card {
+    position: relative;
+    overflow: hidden;
+  }
+  .card .overlay {
+    position: absolute;
+    inset: 0;
+    top: 70%;
+    left: 0;
+    width: 100%;
+    height: 30%; /* e.g., bottom quarter of the card */
+    background: rgba(0, 0, 0, 0.4); /* dark transparent layer */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 0 0 10px 10px;
+    z-index: 1; /* sits above the image but below text/buttons */
+  }
+
+  /* Fade in on hover */
+  .card:hover .overlay {
+    opacity: 1;
+  }
+
+  /* Keep text and buttons visible above overlay */
+  .card h3,
+  .card .muted,
+  .card .row {
+    position: relative;
+    z-index: 2;
+  }
+  .overlay .view-text {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover .overlay .view-text {
+    opacity: 1;
+  }
+
   /* Sidebar */
   * { 
     box-sizing: border-box; 
@@ -643,12 +689,14 @@ function renderProducts(category="Home"){
     const card=document.createElement("div"); 
     card.className="card";
     card.innerHTML=`
-      <img src="${p.img}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <div class="muted">${p.desc}</div>
-      <div class="row">
-        <div class="price">BDT ${p.price.toFixed(2)}</div>
-        <button class="btn">Add</button>
+      <div class="overlay"></div>
+        <span class="view-text"></span>
+          <img src="${p.img}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <div class="muted">${p.desc}</div>
+          <div class="row">
+          <div class="price">BDT ${p.price.toFixed(2)}</div>
+          <button class="btn">Add</button>
       </div>
     `;
     card.querySelector("button").addEventListener("click",()=>addToCart(p.id));
