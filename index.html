@@ -550,7 +550,7 @@
 <!-- Animated sidebar nav -->
 <nav>
   <div class="nav-links">
-    <a href="#" onclick="renderProducts('All')" class="link">All</a>
+    <a href="#" onclick="renderProducts('Home')" class="link">Home</a>
     <a href="#" onclick="renderProducts('Clothing')" class="link">Clothing</a>
     <a href="#" onclick="renderProducts('Accessories')" class="link">Accessories</a>
     <a href="#" onclick="renderProducts('Gear')" class="link">Gear</a>
@@ -631,10 +631,10 @@ function showToast(msg){
 }
 
 // ===== Render Products =====
-function renderProducts(category="All"){
+function renderProducts(category="Home"){
   const container = document.getElementById("products");
   container.innerHTML="";
-  PRODUCTS.filter(p=>category==="All" || 
+  PRODUCTS.filter(p=>category==="Home" || 
     (category==="Clothing" && ["Classic Tee","Denim Jacket","Casual Pants","Cotton Socks","Sport Joggers"].includes(p.name)) ||
     (category==="Accessories" && ["Leather Wallet","Wrist Watch","Power Bank","Cable","Phone Case"].includes(p.name)) ||
     (category==="Gear" && ["Bike Gloves","Bike Mask","Bike Helmet","Bike Body Armor","Casual Sneakers"].includes(p.name))
